@@ -1,0 +1,13 @@
+# локальные исходники — в публичный репозиторий НЕ попадают
+messages.js
+encrypt.html
+photos/
+*.jpg
+*.jpeg
+*.png
+ref-*.*
+
+# системное
+.DS_Store
+Thumbs.db
+desktop.ini

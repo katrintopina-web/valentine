@@ -1,0 +1,32 @@
+name: Morning valentine
+
+# Каждое утро шлёт мужу в Телеграм ссылку на открытку.
+# Сама открытка (фото + тексты) зашифрована в vault.enc — бот её не читает.
+
+on:
+  schedule:
+    # 05:00 UTC = 08:00 в Кишинёве летом (UTC+3).
+    # После 26 октября (зимнее время, UTC+2) поменяй на "0 6 * * *".
+    - cron: "0 5 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Europe/Chisinau
+      SITE_URL: "https://katrintopina-web.github.io/valentine/"
+    steps:
+      - name: Отправить ссылку в Телеграм
+        env:
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MONTHS=(января февраля марта апреля мая июня июля августа сентября октября ноября декабря)
+          D=$(date +%-d)
+          M=${MONTHS[$(( $(date +%-m) - 1 ))]}
+          TEXT=$(printf '☀️ Доброе утро, любимый!\n\nТебя ждёт новая открытка на %s %s:\n%s' "$D" "$M" "$SITE_URL")
+          curl -sS --fail --get \
+            --data-urlencode chat_id="$CHAT" \
+            --data-urlencode text="$TEXT" \
+            "https://api.telegram.org/bot$BOT/sendMessage"
