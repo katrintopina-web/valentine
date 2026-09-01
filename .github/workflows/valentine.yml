@@ -19,8 +19,8 @@ jobs:
     env:
       TZ: Europe/Chisinau
       SITE_URL: "https://katrintopina-web.github.io/valentine/"
-      # кому слать. Сейчас — Катя (для теста). Заменим на chat_id мужа.
-      CHAT_ID: "825627894"
+      # кому слать — chat_id мужа (Artem)
+      CHAT_ID: "305063892"
     steps:
       - name: Отправить ссылку в Телеграм
         env:
