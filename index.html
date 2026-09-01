@@ -303,13 +303,13 @@
     }
   }
 
-  document.getElementById("go").addEventListener("click", function () {
+  function submit() {
     errEl.textContent = "";
-    if (passIn.value) tryOpen(passIn.value, false);
-  });
-  passIn.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") { errEl.textContent = ""; if (passIn.value) tryOpen(passIn.value, false); }
-  });
+    var v = passIn.value.trim();
+    if (v) tryOpen(v, false);
+  }
+  document.getElementById("go").addEventListener("click", submit);
+  passIn.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
 })();
 </script>
 </body>
