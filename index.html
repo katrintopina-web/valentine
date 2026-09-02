@@ -193,15 +193,13 @@
     background:radial-gradient(closest-side, var(--photo-tint), transparent 74%);
     opacity:.5; filter:blur(34px);
   }
-  .card-tilt{
-    position:relative; width:100%; transform-style:preserve-3d;
-    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
-    transition:transform .3s var(--ease-soft);
-  }
   .card__inner{ position:relative; width:100%; transform-style:preserve-3d; transition:transform .95s var(--ease-soft); will-change:transform; }
   .scene.flipped .card__inner{ transform:rotateY(180deg); }
-  .face{ position:relative; width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
-  .face--back{ position:absolute; inset:0; transform:rotateY(180deg); }
+  .face{ position:relative; width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; transition:visibility 0s linear .45s; }
+  .face--front{ transform:rotateY(0deg); }
+  .face--back{ position:absolute; inset:0; transform:rotateY(180deg); visibility:hidden; }
+  .scene.flipped .face--front{ visibility:hidden; }
+  .scene.flipped .face--back{ visibility:visible; }
 
   .paper{
     position:relative; width:100%; aspect-ratio:4/5; background:#f4ecdd; padding:15px;
@@ -270,8 +268,7 @@
       <div class="env__back"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
     </div>
     <div class="card">
-      <div class="card-tilt" id="tilt">
-        <div class="card__inner">
+      <div class="card__inner">
           <div class="face face--front">
             <div class="paper">
               <img id="pic" alt="" />
@@ -290,7 +287,6 @@
             </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 
@@ -352,7 +348,6 @@
 
     var scene = document.getElementById("scene");
     var hint = document.getElementById("hint");
-    var tilt = document.getElementById("tilt");
     var opened = false;
 
     function act() {
@@ -367,30 +362,10 @@
     scene.addEventListener("click", act);
     scene.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); } });
 
-    /* тактильный отклик */
+    /* тактильный отклик на нажатие */
     scene.addEventListener("pointerdown", function () { scene.classList.add("press"); });
     window.addEventListener("pointerup", function () { scene.classList.remove("press"); });
     window.addEventListener("pointercancel", function () { scene.classList.remove("press"); });
-
-    /* 3D-наклон — только для мыши (на телефоне отключён ради плавности) */
-    if (!RM && FINE) {
-      var raf = 0;
-      function move(e) {
-        var r = scene.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width - .5;
-        var py = (e.clientY - r.top) / r.height - .5;
-        if (raf) return;
-        raf = requestAnimationFrame(function () {
-          raf = 0;
-          tilt.style.setProperty("--ry", (px * 11).toFixed(2) + "deg");
-          tilt.style.setProperty("--rx", (-py * 11).toFixed(2) + "deg");
-        });
-      }
-      function reset() { tilt.style.setProperty("--ry", "0deg"); tilt.style.setProperty("--rx", "0deg"); }
-      scene.addEventListener("pointermove", move);
-      scene.addEventListener("pointerleave", reset);
-      scene.addEventListener("pointerup", reset);
-    }
 
     var midnight = new Date(now); midnight.setHours(24, 0, 5, 0);
     setTimeout(function () { location.reload(); }, midnight - now);
