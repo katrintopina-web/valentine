@@ -28,8 +28,7 @@
     --ease-spring:cubic-bezier(.34,1.56,.64,1);
     --ease-soft:cubic-bezier(.22,1,.36,1);
 
-    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
-    --tex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.16' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.5'/%3E%3C/svg%3E");
+    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
     --scallop-h:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M0 0 H22 V6 Q22 16 11 16 Q0 16 0 6 Z' fill='%235c1622' opacity='0.92'/%3E%3Ccircle cx='11' cy='6' r='1.7' fill='%23f3ebd9'/%3E%3Cline x1='11' y1='16' x2='11' y2='18.5' stroke='%235c1622' stroke-width='1'/%3E%3Cline x1='6' y1='15' x2='4' y2='18' stroke='%235c1622' stroke-width='0.8'/%3E%3Cline x1='16' y1='15' x2='18' y2='18' stroke='%235c1622' stroke-width='0.8'/%3E%3C/svg%3E");
     --scallop-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='22' viewBox='0 0 18 22'%3E%3Cpath d='M0 0 V22 H6 Q16 22 16 11 Q16 0 6 0 Z' fill='%235c1622' opacity='0.92'/%3E%3Ccircle cx='6' cy='11' r='1.7' fill='%23f3ebd9'/%3E%3Cline x1='16' y1='11' x2='18.5' y2='11' stroke='%235c1622' stroke-width='1'/%3E%3Cline x1='15' y1='6' x2='18' y2='4' stroke='%235c1622' stroke-width='0.8'/%3E%3Cline x1='15' y1='16' x2='18' y2='18' stroke='%235c1622' stroke-width='0.8'/%3E%3C/svg%3E");
   }
@@ -131,8 +130,8 @@
   .env{ position:absolute; left:50%; top:50%; width:100%; aspect-ratio:7/5; transform:translate(-50%,-50%); perspective:1100px; }
   .env__back{
     position:absolute; inset:0; border-radius:8px;
-    background:var(--tex),var(--noise),linear-gradient(150deg,#9e2029,#6a1620);
-    background-size:110px,150px,auto; background-blend-mode:soft-light,overlay,normal;
+    background:var(--noise),linear-gradient(150deg,#9c1f28,#6c1620);
+    background-size:170px,auto; background-blend-mode:soft-light,normal;
     box-shadow:
       0 2px 4px rgba(0,0,0,.4),
       0 30px 50px -18px rgba(0,0,0,.55),
@@ -141,22 +140,36 @@
   }
   .env__pocket{
     position:absolute; inset:0; border-radius:8px; z-index:5;
-    background:var(--tex),var(--noise),linear-gradient(155deg,#801821,#480d15);
-    background-size:110px,150px,auto; background-blend-mode:soft-light,overlay,normal;
+    background:var(--noise),linear-gradient(155deg,#8a1a23,#520f18);
+    background-size:170px,auto; background-blend-mode:soft-light,normal;
     clip-path:polygon(0 8%,50% 52%,100% 8%,100% 100%,0 100%);
     box-shadow:inset 0 16px 26px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--gold);
   }
   .env__flap{
     position:absolute; left:0; right:0; top:0; height:65%; z-index:6;
-    background:var(--tex),var(--noise),linear-gradient(#6e131c,#380a11);
-    background-size:110px,150px,auto; background-blend-mode:soft-light,overlay,normal;
+    background:var(--noise),linear-gradient(#701320,#3c0b12);
+    background-size:170px,auto; background-blend-mode:soft-light,normal;
     clip-path:polygon(0 0,100% 0,50% 100%);
     transform-origin:50% 0; transform:rotateX(0deg) translateZ(0); backface-visibility:hidden;
     transition:transform .85s var(--ease-soft), z-index 0s .42s;
     box-shadow:0 3px 8px rgba(0,0,0,.35); will-change:transform;
   }
   .env__flap::after{ content:""; position:absolute; inset:0; background:linear-gradient(#fff2,transparent 40%); mix-blend-mode:soft-light; }
-  .scene.opened .env__flap{ transform:rotateX(-164deg) translateZ(0); z-index:1; }
+  .scene.opened .env__flap{ transform:rotateX(-158deg) translateZ(0); z-index:1; }
+
+  /* внутренняя подкладка флапа с кружевом — видна, когда конверт открыт */
+  .env__lining{
+    position:absolute; left:0; right:0; top:0; height:52%; z-index:4;
+    background:#efe6d2;
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    box-shadow:inset 0 0 24px rgba(120,90,60,.22);
+    opacity:0; transition:opacity .4s ease .35s;
+  }
+  .scene.opened .env__lining{ opacity:1; }
+  .env__lining::after{
+    content:""; position:absolute; inset:0;
+    background:var(--lace-cut, url("assets/lace.png")) center top / 168% auto no-repeat;
+  }
 
   .env__seal{
     position:absolute; left:50%; top:44%; width:25%; aspect-ratio:1;
@@ -210,13 +223,6 @@
   }
   .paper img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
-  /* бордовое кружево поверх фото */
-  .lace-frame{
-    position:absolute; inset:0; pointer-events:none;
-    background:url("assets/lace.png") center / 100% 100% no-repeat;
-    mix-blend-mode:multiply;
-  }
-
   .cap{
     position:absolute; left:0; right:0; bottom:0; z-index:2; padding:64px 22px 18px;
     font-family:var(--title-font); font-style:italic; font-weight:600; text-align:center;
@@ -229,9 +235,9 @@
     background:linear-gradient(transparent,rgba(0,0,0,.18),rgba(0,0,0,.62));
   }
 
-  /* оборот — кремовая ажурная рамка */
-  .letter{ background:#efe7d4 url("assets/frame.png") center / 100% 100% no-repeat; }
-  .wish{ position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18% 15%; text-align:center; }
+  /* оборот — чистая кремовая бумага */
+  .letter{ background:var(--paper); }
+  .wish{ position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14% 12%; text-align:center; }
   .wish .body{ max-width:15.5rem; font-family:var(--title-font); font-style:italic; font-weight:500; font-size:clamp(1.1rem,4.3vw,1.44rem); line-height:1.5; color:var(--ink); white-space:pre-line; }
   .wish .dot3{ display:flex; gap:7px; margin:16px 0 12px; }
   .wish .dot3 i{ width:4px; height:4px; border-radius:50%; background:var(--accent); opacity:.8; }
@@ -271,14 +277,13 @@
 
   <div class="scene" id="scene" role="button" tabindex="0" aria-label="Открыть конверт">
     <div class="env" aria-hidden="true">
-      <div class="env__back"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
+      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
     </div>
     <div class="card">
       <div class="card__inner">
           <div class="face face--front">
             <div class="paper">
               <img id="pic" alt="" />
-              <div class="lace-frame"></div>
               <div class="cap" id="caption"></div>
             </div>
           </div>
@@ -306,6 +311,32 @@
   var FINE = window.matchMedia && matchMedia("(pointer: fine)").matches;
 
   function tap() { if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {} }
+
+  /* ---------- вырезать серый фон у кружева (chroma-key) ---------- */
+  function keyLace() {
+    var root = document.documentElement;
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var s = Math.min(1, 560 / img.naturalWidth);
+        var w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var x = c.getContext("2d"); x.drawImage(img, 0, 0, w, h);
+        var im = x.getImageData(0, 0, w, h), d = im.data;
+        var ci = ((h >> 1) * w + (w >> 1)) * 4;      // серединка = серый фон
+        var kr = d[ci], kg = d[ci + 1], kb = d[ci + 2], tol = 26, feather = 22;
+        for (var i = 0; i < d.length; i += 4) {
+          var dr = d[i] - kr, dg = d[i + 1] - kg, db = d[i + 2] - kb;
+          var dist = Math.sqrt(dr * dr + dg * dg + db * db);
+          if (dist < tol) d[i + 3] = 0;
+          else if (dist < tol + feather) d[i + 3] = ((dist - tol) / feather * 255) | 0;
+        }
+        x.putImageData(im, 0, 0);
+        root.style.setProperty("--lace-cut", "url('" + c.toDataURL("image/png") + "')");
+      } catch (e) {}
+    };
+    img.src = "assets/lace.png";
+  }
 
   /* ---------- отрисовка ---------- */
   function render(V) {
@@ -393,6 +424,7 @@
   var gate = document.getElementById("gate");
   var passIn = document.getElementById("pass");
   var errEl = document.getElementById("err");
+  keyLace();
 
   // демо-режим для проверки дизайна: ...?demo
   if (!window.VALENTINE && location.search.indexOf("demo") > -1) {
