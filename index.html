@@ -110,7 +110,8 @@
   }
   .kicker{
     position:fixed; top:26px; left:0; right:0; z-index:3; text-align:center;
-    color:var(--fg-soft, rgba(243,231,220,.42)); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
+    color:var(--fg-top, rgba(243,231,220,.5)); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
+    text-shadow:var(--fg-top-sh, none);
     opacity:0; transition:opacity .8s ease;
   }
   .revealed .tagline{ opacity:1; transform:none; }
@@ -261,7 +262,8 @@
 
   .hint{
     position:fixed; left:0; right:0; bottom:max(30px,env(safe-area-inset-bottom)); z-index:3; text-align:center;
-    color:var(--fg-soft, rgba(243,231,220,.5)); font-size:.74rem; letter-spacing:.14em;
+    color:var(--fg-bot, rgba(243,231,220,.62)); font-size:.74rem; letter-spacing:.14em;
+    text-shadow:var(--fg-bot-sh, none);
     opacity:0; animation:pulse 2.6s ease-in-out infinite;
   }
   @keyframes pulse{ 0%,100%{opacity:.32} 50%{opacity:.75} }
@@ -416,7 +418,7 @@
             H = Math.round(H * 60); if (H < 0) H += 360; return H;
           };
           var clamp = function (v) { return v < 0 ? 0 : v > 255 ? 255 : v | 0; };
-          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--lace-filter", "--lace-opacity", "--env-filter", "--mat"];
+          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh", "--lace-filter", "--lace-opacity", "--env-filter", "--mat"];
           if (sat < 0.14) {
             // ч/б фото → бордо во всём (значения по умолчанию)
             if (bg) bg.style.background = "";
@@ -435,15 +437,23 @@
             // «for you» — антик-золото с лёгким уклоном в гамму, не тёмное
             var aR = mix(mix(172, sR, .2), 30, .06), aG = mix(mix(132, sG, .2), 30, .06), aB = mix(mix(70, sB, .2), 30, .06);
             root.style.setProperty("--tag-fill", "linear-gradient(180deg,rgb(" + aR + "," + aG + "," + aB + "),rgb(" + mix(aR, 10, .28) + "," + mix(aG, 10, .28) + "," + mix(aB, 10, .28) + "))");
-            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.32)");
-            root.style.setProperty("--fg-soft", "rgba(" + aR + "," + aG + "," + aB + ",.62)");
+            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.5)");
 
-            // кружево — деликатное: сильно приглушено, полупрозрачно, лёгкий сдвиг тона
+            // дата (сверху, на светлом) — тёмная с тёплым отливом + светлый ореол
+            var tR = mix(sR, 18, .78), tG = mix(sG, 18, .78), tB = mix(sB, 18, .78);
+            root.style.setProperty("--fg-top", "rgba(" + tR + "," + tG + "," + tB + ",.9)");
+            root.style.setProperty("--fg-top-sh", "0 1px 2px rgba(255,255,255,.55)");
+            // «коснись фото» (снизу, на тёмном) — светлая с тёмным ореолом
+            root.style.setProperty("--fg-bot", "rgba(248,242,232,.82)");
+            root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.45)");
+
+            // кружево — тон-в-тон с надписью/паспарту: почти обесцвечено, тёплый отлив,
+            // светлее (уходит в цвет мата), полупрозрачно. multiply с --mat довершает.
             var rot = hueOf(sR, sG, sB) - 350;
             if (rot > 180) rot -= 360; if (rot < -180) rot += 360;
             rot = Math.max(-40, Math.min(40, Math.round(rot)));
-            root.style.setProperty("--lace-filter", "sepia(.4) saturate(.32) hue-rotate(" + rot + "deg) brightness(1.02)");
-            root.style.setProperty("--lace-opacity", ".7");
+            root.style.setProperty("--lace-filter", "sepia(.9) saturate(.55) hue-rotate(" + Math.round(rot / 2) + "deg) brightness(1.18)");
+            root.style.setProperty("--lace-opacity", ".6");
 
             // конверт — тот же сдвиг, мягче (±26°), тон остаётся глубоким
             root.style.setProperty("--env-filter", "hue-rotate(" + Math.max(-26, Math.min(26, rot)) + "deg) saturate(.94) brightness(.98)");
