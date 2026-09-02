@@ -193,13 +193,15 @@
     background:radial-gradient(closest-side, var(--photo-tint), transparent 74%);
     opacity:.5; filter:blur(34px);
   }
-  .card__inner{ position:relative; width:100%; transform-style:preserve-3d; transition:transform .95s var(--ease-soft); will-change:transform; }
+  .card__inner{ position:relative; width:100%; transform-style:preserve-3d; transition:transform .7s cubic-bezier(.45,.05,.35,1); will-change:transform; }
   .scene.flipped .card__inner{ transform:rotateY(180deg); }
-  .face{ position:relative; width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; transition:visibility 0s linear .45s; }
-  .face--front{ transform:rotateY(0deg); }
-  .face--back{ position:absolute; inset:0; transform:rotateY(180deg); visibility:hidden; }
-  .scene.flipped .face--front{ visibility:hidden; }
-  .scene.flipped .face--back{ visibility:visible; }
+  .face{ position:relative; width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+  /* грань, что УХОДИТ — прячется с задержкой (когда уже повернулась ребром);
+     грань, что ПОЯВЛЯЕТСЯ — включается сразу (её держит backface-visibility) */
+  .face--front{ transform:rotateY(0deg); visibility:visible; transition:visibility 0s 0s; }
+  .face--back{ position:absolute; inset:0; transform:rotateY(180deg); visibility:hidden; transition:visibility 0s .24s; }
+  .scene.flipped .face--front{ visibility:hidden; transition:visibility 0s .24s; }
+  .scene.flipped .face--back{ visibility:visible; transition:visibility 0s 0s; }
 
   .paper{
     position:relative; width:100%; aspect-ratio:4/5; background:#f4ecdd; padding:15px;
