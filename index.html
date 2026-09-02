@@ -159,17 +159,25 @@
 
   /* внутренняя подкладка флапа с кружевом — видна, когда конверт открыт */
   .env__lining{
-    position:absolute; left:0; right:0; top:0; height:52%; z-index:4;
-    background:#efe6d2;
+    position:absolute; left:0; right:0; top:0; height:54%; z-index:4;
+    background:#f0e7d3;
     clip-path:polygon(0 0,100% 0,50% 100%);
-    box-shadow:inset 0 0 24px rgba(120,90,60,.22);
-    opacity:0; transition:opacity .4s ease .35s;
+    box-shadow:inset 0 0 26px rgba(120,90,60,.22);
+    opacity:0; transition:opacity .45s ease .45s;
   }
   .scene.opened .env__lining{ opacity:1; }
-  .env__lining::after{
-    content:""; position:absolute; inset:0;
-    background:var(--lace-cut, url("assets/lace.png")) center top / 168% auto no-repeat;
+  .env__lining::after{        /* кружевная кайма по краю флапа */
+    content:""; position:absolute; left:-6%; right:-6%; top:-2%; height:120%;
+    background:url("assets/lace.png") center -4% / 210% auto no-repeat;
+    mix-blend-mode:multiply; opacity:.9;
   }
+  .env__note{                 /* золотая надпись на открытом флапе */
+    position:absolute; left:0; right:0; top:16%; z-index:5; text-align:center;
+    font-family:var(--fancy-font); font-size:clamp(.9rem,3.6vw,1.15rem); letter-spacing:.02em;
+    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    opacity:0; transition:opacity .4s ease .7s;
+  }
+  .scene.opened .env__note{ opacity:1; }
 
   .env__seal{
     position:absolute; left:50%; top:44%; width:25%; aspect-ratio:1;
@@ -198,8 +206,9 @@
   /* ─────────── ФОТО-КАРТОЧКА ─────────── */
   .card{
     position:absolute; left:50%; top:50%; width:88%;
-    transform:translate(-50%,-24%) scale(.9); opacity:0; z-index:4; perspective:1500px;
-    transition:transform .9s var(--ease-spring) .42s, opacity .55s ease .42s;
+    transform:translate(-50%,0%) scale(.76); opacity:0; z-index:4; perspective:1500px;
+    /* фото поднимается ПОСЛЕ того, как открылся конверт */
+    transition:transform 1.15s var(--ease-spring) .95s, opacity .6s ease .95s;
   }
   .scene.opened .card{ transform:translate(-50%,-52%) scale(1); opacity:1; z-index:9; }
   .card::after{
@@ -277,7 +286,7 @@
 
   <div class="scene" id="scene" role="button" tabindex="0" aria-label="Открыть конверт">
     <div class="env" aria-hidden="true">
-      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
+      <div class="env__back"></div><div class="env__lining"></div><div class="env__note" id="flapNote">любимому мужу</div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
     </div>
     <div class="card">
       <div class="card__inner">
@@ -312,32 +321,6 @@
 
   function tap() { if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {} }
 
-  /* ---------- вырезать серый фон у кружева (chroma-key) ---------- */
-  function keyLace() {
-    var root = document.documentElement;
-    var img = new Image();
-    img.onload = function () {
-      try {
-        var s = Math.min(1, 560 / img.naturalWidth);
-        var w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
-        var c = document.createElement("canvas"); c.width = w; c.height = h;
-        var x = c.getContext("2d"); x.drawImage(img, 0, 0, w, h);
-        var im = x.getImageData(0, 0, w, h), d = im.data;
-        var ci = ((h >> 1) * w + (w >> 1)) * 4;      // серединка = серый фон
-        var kr = d[ci], kg = d[ci + 1], kb = d[ci + 2], tol = 26, feather = 22;
-        for (var i = 0; i < d.length; i += 4) {
-          var dr = d[i] - kr, dg = d[i + 1] - kg, db = d[i + 2] - kb;
-          var dist = Math.sqrt(dr * dr + dg * dg + db * db);
-          if (dist < tol) d[i + 3] = 0;
-          else if (dist < tol + feather) d[i + 3] = ((dist - tol) / feather * 255) | 0;
-        }
-        x.putImageData(im, 0, 0);
-        root.style.setProperty("--lace-cut", "url('" + c.toDataURL("image/png") + "')");
-      } catch (e) {}
-    };
-    img.src = "assets/lace.png";
-  }
-
   /* ---------- отрисовка ---------- */
   function render(V) {
     var style = V.style || {}, days = V.days || {}, fallback = V.fallback || { title: "", text: "" };
@@ -361,6 +344,7 @@
     document.getElementById("wish").textContent = msg.text || "";
     document.getElementById("sign").textContent = V.signature || "";
     if (V.envelope && V.envelope.label) document.getElementById("tagline").textContent = V.envelope.label;
+    if (V.envelope && V.envelope.flapNote) document.getElementById("flapNote").textContent = V.envelope.flapNote;
     try { document.getElementById("kicker").textContent = now.toLocaleDateString("ru-RU", { day: "numeric", month: "long" }); } catch (e) {}
     document.title = msg.title ? msg.title + " ♡" : "Для тебя";
 
@@ -424,7 +408,6 @@
   var gate = document.getElementById("gate");
   var passIn = document.getElementById("pass");
   var errEl = document.getElementById("err");
-  keyLace();
 
   // демо-режим для проверки дизайна: ...?demo
   if (!window.VALENTINE && location.search.indexOf("demo") > -1) {
