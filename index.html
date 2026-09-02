@@ -447,16 +447,15 @@
             root.style.setProperty("--fg-bot", "rgba(248,242,232,.82)");
             root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.45)");
 
-            // кружево — тон-в-тон с надписью/паспарту: почти обесцвечено, тёплый отлив,
-            // светлее (уходит в цвет мата), полупрозрачно. multiply с --mat довершает.
+            // конверт — благородный сдвиг оттенка (±26°), тон остаётся глубоким
             var rot = hueOf(sR, sG, sB) - 350;
             if (rot > 180) rot -= 360; if (rot < -180) rot += 360;
-            rot = Math.max(-40, Math.min(40, Math.round(rot)));
-            root.style.setProperty("--lace-filter", "sepia(.9) saturate(.55) hue-rotate(" + Math.round(rot / 2) + "deg) brightness(1.18)");
-            root.style.setProperty("--lace-opacity", ".6");
+            var envF = "hue-rotate(" + Math.max(-26, Math.min(26, Math.round(rot))) + "deg) saturate(.94) brightness(.98)";
+            root.style.setProperty("--env-filter", envF);
 
-            // конверт — тот же сдвиг, мягче (±26°), тон остаётся глубоким
-            root.style.setProperty("--env-filter", "hue-rotate(" + Math.max(-26, Math.min(26, rot)) + "deg) saturate(.94) brightness(.98)");
+            // кружево — ровно в цвет конверта (та же коррекция), чуть прозрачнее
+            root.style.setProperty("--lace-filter", envF);
+            root.style.setProperty("--lace-opacity", ".9");
           }
         } catch (e) {}
       });
