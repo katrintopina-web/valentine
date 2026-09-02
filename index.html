@@ -219,13 +219,10 @@
   }
   .paper img{ display:block; width:100%; height:100%; object-fit:cover; }
 
-  .photo-sign{                       /* «моему мужу» — деликатно, курсивом, золотом */
-    position:absolute; left:0; right:0; bottom:10%; z-index:2; text-align:center; pointer-events:none;
-    font-family:var(--title-font); font-style:italic; letter-spacing:.02em;
-    font-size:clamp(.98rem,4vw,1.2rem);
-    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
-    filter:drop-shadow(0 2px 7px rgba(0,0,0,.7));
+  .photo-heart{
+    position:absolute; left:0; right:0; bottom:11%; z-index:2; text-align:center; pointer-events:none;
   }
+  .photo-heart svg{ width:clamp(20px,5.4vw,27px); height:auto; filter:drop-shadow(0 2px 6px rgba(0,0,0,.55)); }
 
   .cap{
     position:absolute; left:0; right:0; bottom:0; z-index:2; padding:64px 20px 18px;
@@ -290,7 +287,14 @@
           <div class="face face--front">
             <div class="paper framed">
               <img id="pic" alt="" />
-              <div class="photo-sign" id="photoSign">моему мужу</div>
+              <div class="photo-heart" aria-hidden="true">
+                <svg viewBox="0 0 24 22" fill="none" stroke="url(#hg)" stroke-width="1.2" stroke-linejoin="round">
+                  <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f6e7c8"/><stop offset=".5" stop-color="#e6c887"/><stop offset="1" stop-color="#c9a25e"/>
+                  </linearGradient></defs>
+                  <path d="M12 20.2C12 20.2 2.6 14.4 2.6 8.2 A4.7 4.7 0 0 1 12 5.7 A4.7 4.7 0 0 1 21.4 8.2 C21.4 14.4 12 20.2 12 20.2Z"/>
+                </svg>
+              </div>
             </div>
           </div>
           <div class="face face--back">
@@ -368,7 +372,6 @@
     document.getElementById("wish").textContent = msg.text || "";
     document.getElementById("occ").textContent = msg.occasion || "";
     document.getElementById("sign").textContent = V.signature || "";
-    if (V.dedication) document.getElementById("photoSign").textContent = V.dedication;
     if (V.envelope && V.envelope.label) document.getElementById("tagline").textContent = V.envelope.label;
     try { document.getElementById("kicker").textContent = now.toLocaleDateString("ru-RU", { day: "numeric", month: "long" }); } catch (e) {}
     document.title = msg.title ? msg.title + " ♡" : "Для тебя";
