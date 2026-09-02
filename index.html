@@ -103,13 +103,13 @@
   .tagline{
     position:fixed; top:clamp(34px, 9%, 90px); left:0; right:0; z-index:3; text-align:center;
     font-family:var(--fancy-font); font-size:clamp(1.9rem,7.5vw,2.8rem); letter-spacing:.015em;
-    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
-    filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
+    background:var(--tag-fill, var(--gold-line)); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 3px var(--tag-shadow, rgba(0,0,0,.4)));
     opacity:0; transition:opacity .8s var(--ease-soft) .1s; transform:translateY(-6px);
   }
   .kicker{
     position:fixed; top:26px; left:0; right:0; z-index:3; text-align:center;
-    color:rgba(243,231,220,.42); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
+    color:var(--fg-soft, rgba(243,231,220,.42)); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
     opacity:0; transition:opacity .8s ease;
   }
   .revealed .tagline{ opacity:1; transform:none; }
@@ -254,7 +254,7 @@
 
   .hint{
     position:fixed; left:0; right:0; bottom:max(30px,env(safe-area-inset-bottom)); z-index:3; text-align:center;
-    color:rgba(243,231,220,.5); font-size:.74rem; letter-spacing:.14em;
+    color:var(--fg-soft, rgba(243,231,220,.5)); font-size:.74rem; letter-spacing:.14em;
     opacity:0; animation:pulse 2.6s ease-in-out infinite;
   }
   @keyframes pulse{ 0%,100%{opacity:.32} 50%{opacity:.75} }
@@ -398,14 +398,22 @@
           var sat = mx ? (mx - mn) / mx : 0;
           var mix = function (a, t, k) { return Math.round(a + (t - a) * k); };
           var bg = document.querySelector(".scene-bg");
-          if (bg) {
-            if (sat < 0.14) {
-              bg.style.background = "";                       // ч/б фото → фон по умолчанию (бордо)
-            } else {                                          // цветное → светлый градиент в гамме снимка
-              var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
-              var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
-              bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
-            }
+          if (sat < 0.14) {
+            // ч/б фото → бордовый фон, золотые надписи (по умолчанию)
+            if (bg) bg.style.background = "";
+            root.style.removeProperty("--tag-fill");
+            root.style.removeProperty("--tag-shadow");
+            root.style.removeProperty("--fg-soft");
+          } else {
+            // цветное → светлый градиент в гамме снимка + тёмные надписи под него
+            var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
+            var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
+            if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
+            var ink = "rgb(" + mix(r, 12, .68) + "," + mix(gg, 12, .68) + "," + mix(b, 12, .68) + ")";
+            var inkSoft = "rgba(" + mix(r, 12, .68) + "," + mix(gg, 12, .68) + "," + mix(b, 12, .68) + ",.58)";
+            root.style.setProperty("--tag-fill", "linear-gradient(180deg," + ink + "," + ink + ")");
+            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.35)");
+            root.style.setProperty("--fg-soft", inkSoft);
           }
         } catch (e) {}
       });
