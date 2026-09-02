@@ -219,8 +219,8 @@
     position:relative; width:100%; aspect-ratio:4/5; background:#f4ecdd; padding:8px;
     box-shadow:0 2px 4px rgba(20,6,0,.35), 0 26px 44px -22px rgba(0,0,0,.6);
   }
-  /* лицевое фото: широкое кремовое паспарту, кружево лежит на нём с отступом от фото */
-  .paper.framed{ padding:34px; }
+  /* лицевое фото: широкое паспарту (цвет = фон под кружевом), кружево с отступом от фото */
+  .paper.framed{ padding:34px; background:var(--mat, #f4ecdd); }
   .paper.framed::before{
     content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
     border:24px solid transparent;
@@ -415,41 +415,38 @@
             else H = (R - G) / dd + 4;
             H = Math.round(H * 60); if (H < 0) H += 360; return H;
           };
+          var clamp = function (v) { return v < 0 ? 0 : v > 255 ? 255 : v | 0; };
+          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--lace-filter", "--lace-opacity", "--env-filter", "--mat"];
           if (sat < 0.14) {
-            // ч/б фото → бордовый фон, золотые надписи, бордовое кружево (по умолчанию)
+            // ч/б фото → бордо во всём (значения по умолчанию)
             if (bg) bg.style.background = "";
-            root.style.removeProperty("--tag-fill");
-            root.style.removeProperty("--tag-shadow");
-            root.style.removeProperty("--fg-soft");
-            root.style.removeProperty("--lace-filter");
-            root.style.removeProperty("--lace-opacity");
-            root.style.removeProperty("--env-filter");
+            vars.forEach(function (v) { root.style.removeProperty(v); });
           } else {
-            // цветное фото → светлый градиент в гамме снимка
-            var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
-            var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
+            // усиливаем насыщенность средней (кадр часто сероват из-за песка/белого)
+            var mid = (Math.max(r, gg, b) + Math.min(r, gg, b)) / 2;
+            var sR = clamp(mid + (r - mid) * 1.8), sG = clamp(mid + (gg - mid) * 1.8), sB = clamp(mid + (b - mid) * 1.8);
+
+            // фон + паспарту = светлый тёплый оттенок гаммы
+            var lite = "rgb(" + mix(sR, 255, .58) + "," + mix(sG, 255, .58) + "," + mix(sB, 255, .58) + ")";
+            var deep = "rgb(" + mix(sR, 22, .5) + "," + mix(sG, 22, .5) + "," + mix(sB, 22, .5) + ")";
             if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
+            root.style.setProperty("--mat", "rgb(" + mix(sR, 255, .66) + "," + mix(sG, 255, .66) + "," + mix(sB, 255, .66) + ")");
 
-            // «for you» — глубокое антик-золото с лёгким уклоном в гамму фото
-            var aR = mix(mix(150, r, .22), 22, .12);
-            var aG = mix(mix(112, gg, .22), 22, .12);
-            var aB = mix(mix(56, b, .22), 22, .12);
-            var g1 = "rgb(" + aR + "," + aG + "," + aB + ")";
-            var g2 = "rgb(" + mix(aR, 8, .32) + "," + mix(aG, 8, .32) + "," + mix(aB, 8, .32) + ")";
-            root.style.setProperty("--tag-fill", "linear-gradient(180deg," + g1 + "," + g2 + ")");
-            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.3)");
-            root.style.setProperty("--fg-soft", "rgba(" + aR + "," + aG + "," + aB + ",.6)");
+            // «for you» — антик-золото с лёгким уклоном в гамму, не тёмное
+            var aR = mix(mix(172, sR, .2), 30, .06), aG = mix(mix(132, sG, .2), 30, .06), aB = mix(mix(70, sB, .2), 30, .06);
+            root.style.setProperty("--tag-fill", "linear-gradient(180deg,rgb(" + aR + "," + aG + "," + aB + "),rgb(" + mix(aR, 10, .28) + "," + mix(aG, 10, .28) + "," + mix(aB, 10, .28) + "))");
+            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.32)");
+            root.style.setProperty("--fg-soft", "rgba(" + aR + "," + aG + "," + aB + ",.62)");
 
-            // кружево → мягкий антик-тон, аккуратный сдвиг оттенка
-            var rot = hueOf(r, gg, b) - 350;
+            // кружево — деликатное: сильно приглушено, полупрозрачно, лёгкий сдвиг тона
+            var rot = hueOf(sR, sG, sB) - 350;
             if (rot > 180) rot -= 360; if (rot < -180) rot += 360;
-            rot = Math.max(-45, Math.min(45, Math.round(rot)));
-            root.style.setProperty("--lace-filter", "sepia(.35) saturate(.85) hue-rotate(" + rot + "deg) brightness(.95)");
-            root.style.setProperty("--lace-opacity", ".88");
+            rot = Math.max(-40, Math.min(40, Math.round(rot)));
+            root.style.setProperty("--lace-filter", "sepia(.4) saturate(.32) hue-rotate(" + rot + "deg) brightness(1.02)");
+            root.style.setProperty("--lace-opacity", ".7");
 
-            // конверт → тот же благородный сдвиг, но мягче (±30°), тон остаётся глубоким
-            var erot = Math.max(-30, Math.min(30, rot));
-            root.style.setProperty("--env-filter", "hue-rotate(" + erot + "deg) saturate(.92) brightness(.98)");
+            // конверт — тот же сдвиг, мягче (±26°), тон остаётся глубоким
+            root.style.setProperty("--env-filter", "hue-rotate(" + Math.max(-26, Math.min(26, rot)) + "deg) saturate(.94) brightness(.98)");
           }
         } catch (e) {}
       });
