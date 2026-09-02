@@ -174,31 +174,33 @@
 
   .env__seal{
     position:absolute; left:50%; top:44%; width:27%; aspect-ratio:1;
-    transform:translate(-50%,-50%) rotate(-6deg); z-index:7;
-    border-radius:47% 53% 43% 57% / 55% 46% 54% 45%;   /* неровный восковой край */
-    background:radial-gradient(66% 60% at 40% 36%, #efe3c6, #e0d0ac 58%, #cfbc96);
+    transform:translate(-50%,-50%) rotate(-5deg); z-index:7;
+    border-radius:46% 54% 42% 58% / 56% 44% 56% 44%;   /* неровный восковой край */
+    background:
+      radial-gradient(58% 52% at 36% 32%, #efd08a, #cf9f4b 52%, #a97a30 82%, #8a6224);
     box-shadow:
-      0 5px 12px rgba(0,0,0,.4),
-      inset 0 -3px 6px rgba(120,92,56,.3),
-      inset 0 2px 4px rgba(255,255,255,.26);
+      0 6px 14px rgba(0,0,0,.45),
+      inset 0 -5px 9px rgba(110,70,18,.55),
+      inset 0 4px 7px rgba(255,240,205,.45);
     transition:opacity .4s ease, transform .5s var(--ease-spring);
   }
-  .env__seal::after{                 /* асимметричная лужица растёкшегося воска */
-    content:""; position:absolute; inset:-16% -9% -8% -18%; z-index:-1;
-    border-radius:54% 46% 38% 62% / 44% 60% 40% 56%;
-    background:#dbcaa6; box-shadow:0 5px 11px rgba(0,0,0,.26);
+  .env__seal::after{                 /* асимметричная лужица растёкшегося воска с каплями */
+    content:""; position:absolute; inset:-15% -8% -10% -18%; z-index:-1;
+    border-radius:60% 40% 46% 54% / 42% 58% 48% 52%;
+    background:radial-gradient(circle at 45% 40%, #c99c47, #9c722c);
+    box-shadow:0 5px 11px rgba(0,0,0,.28);
   }
-  .env__seal .seal-ring{            /* тиснёный концентрический ободок */
-    position:absolute; inset:19%; border-radius:50%;
+  .env__seal .seal-ring{            /* тиснёный ободок по краю печати */
+    position:absolute; inset:12%; border-radius:50%;
     box-shadow:
-      inset 0 0 0 1px rgba(120,92,56,.5),
-      inset 0 0 0 4px rgba(255,252,244,.12),
-      inset 0 0 0 5px rgba(120,92,56,.3);
+      inset 0 1px 1px rgba(255,240,205,.45),
+      inset 0 -1px 1px rgba(110,70,18,.5),
+      inset 0 0 0 1px rgba(140,95,35,.35);
   }
-  .env__seal::before{                /* красное сердечко, вдавленное в воск */
-    content:"♥"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    color:#9e1b22; font-size:37%; line-height:1;
-    text-shadow:1px 1px 1px rgba(255,255,255,.45), -1px -1px 1.5px rgba(78,10,14,.5);
+  .env__seal .seal-heart{          /* тиснёное (выпуклое) сердце */
+    position:absolute; left:50%; top:50%; width:46%; transform:translate(-50%,-53%);
+    fill:#d3a350;
+    filter:drop-shadow(0 1.4px .4px rgba(90,55,12,.6)) drop-shadow(0 -1px .4px rgba(255,242,205,.55));
   }
   .scene.opened .env__seal{ opacity:0; transform:translate(-50%,-50%) rotate(-8deg) scale(.7); }
 
@@ -297,7 +299,7 @@
 
   <div class="scene" id="scene" role="button" tabindex="0" aria-label="Открыть конверт">
     <div class="env" aria-hidden="true">
-      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"><span class="seal-ring"></span></div>
+      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"><span class="seal-ring"></span><svg class="seal-heart" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C12 20.5 2 13.9 2 7.9 A5 5 0 0 1 12 5.2 A5 5 0 0 1 22 7.9 C22 13.9 12 20.5 12 20.5Z"/></svg></div>
     </div>
     <div class="card">
       <div class="card__inner">
