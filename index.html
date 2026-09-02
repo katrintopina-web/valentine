@@ -221,6 +221,8 @@
     border:24px solid transparent;
     border-image:url("assets/lace.png") 215 / 24px / 0 round;
     mix-blend-mode:multiply;   /* серый фон PNG смешивается с кремовым паспарту */
+    filter:var(--lace-filter, none);   /* цветное фото → сдвигаем кайму в тон */
+    opacity:var(--lace-opacity, 1);
   }
   .paper img{ display:block; width:100%; height:100%; object-fit:cover; }
 
@@ -398,14 +400,26 @@
           var sat = mx ? (mx - mn) / mx : 0;
           var mix = function (a, t, k) { return Math.round(a + (t - a) * k); };
           var bg = document.querySelector(".scene-bg");
+          var hueOf = function (R, G, B) {
+            R /= 255; G /= 255; B /= 255;
+            var Mx = Math.max(R, G, B), Mn = Math.min(R, G, B), H;
+            if (Mx === Mn) return 0;
+            var dd = Mx - Mn;
+            if (Mx === R) H = ((G - B) / dd) % 6;
+            else if (Mx === G) H = (B - R) / dd + 2;
+            else H = (R - G) / dd + 4;
+            H = Math.round(H * 60); if (H < 0) H += 360; return H;
+          };
           if (sat < 0.14) {
-            // ч/б фото → бордовый фон, золотые надписи (по умолчанию)
+            // ч/б фото → бордовый фон, золотые надписи, бордовое кружево (по умолчанию)
             if (bg) bg.style.background = "";
             root.style.removeProperty("--tag-fill");
             root.style.removeProperty("--tag-shadow");
             root.style.removeProperty("--fg-soft");
+            root.style.removeProperty("--lace-filter");
+            root.style.removeProperty("--lace-opacity");
           } else {
-            // цветное → светлый градиент в гамме снимка + тёмные надписи под него
+            // цветное → светлый градиент в гамме снимка + тёмные надписи + кружево в тон
             var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
             var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
             if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
@@ -414,6 +428,9 @@
             root.style.setProperty("--tag-fill", "linear-gradient(180deg," + ink + "," + ink + ")");
             root.style.setProperty("--tag-shadow", "rgba(255,255,255,.35)");
             root.style.setProperty("--fg-soft", inkSoft);
+            var rot = Math.round(hueOf(r, gg, b) - 350);   // бордовое кружево ≈ 350°
+            root.style.setProperty("--lace-filter", "hue-rotate(" + rot + "deg) saturate(.68) brightness(.92)");
+            root.style.setProperty("--lace-opacity", ".85");
           }
         } catch (e) {}
       });
