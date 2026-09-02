@@ -112,8 +112,10 @@
     opacity:0; transition:opacity .8s var(--ease-soft) .1s; transform:translateY(-6px);
   }
   .kicker{
-    position:fixed; top:26px; left:0; right:0; z-index:3; text-align:center;
-    color:var(--fg-top, rgba(243,231,220,.5)); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
+    position:fixed; top:24px; left:0; right:0; z-index:3; text-align:center;
+    color:var(--fg-top, rgba(243,231,220,.62));
+    font-family:var(--title-font); font-style:italic; font-weight:500;
+    font-size:clamp(.84rem,3vw,.98rem); letter-spacing:.12em;
     text-shadow:var(--fg-top-sh, none);
     opacity:0; transition:opacity .8s ease;
   }
@@ -264,8 +266,10 @@
   .wish .sign .heart{ display:inline-block; margin-left:.14em; font-size:.8em; }
 
   .hint{
-    position:fixed; left:0; right:0; bottom:max(30px,env(safe-area-inset-bottom)); z-index:3; text-align:center;
-    color:var(--fg-bot, rgba(243,231,220,.62)); font-size:.74rem; letter-spacing:.14em;
+    position:fixed; left:0; right:0; bottom:max(28px,env(safe-area-inset-bottom)); z-index:3; text-align:center;
+    color:var(--fg-bot, rgba(243,231,220,.66));
+    font-family:var(--title-font); font-style:italic; font-weight:500;
+    font-size:clamp(.88rem,3.2vw,1.04rem); letter-spacing:.08em;
     text-shadow:var(--fg-bot-sh, none);
     opacity:0; animation:pulse 2.6s ease-in-out infinite;
   }
