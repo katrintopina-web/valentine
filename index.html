@@ -130,8 +130,8 @@
   .env{ position:absolute; left:50%; top:50%; width:100%; aspect-ratio:7/5; transform:translate(-50%,-50%); perspective:1100px; }
   .env__back{
     position:absolute; inset:0; border-radius:8px;
-    background:var(--noise),linear-gradient(150deg,#ab232e,#741823);
-    background-size:150px,auto; background-blend-mode:overlay,normal;
+    background:var(--noise),var(--noise),linear-gradient(150deg,#a9222d,#721822);
+    background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
     box-shadow:
       0 2px 4px rgba(0,0,0,.4),
       0 30px 50px -18px rgba(0,0,0,.55),
@@ -140,15 +140,15 @@
   }
   .env__pocket{
     position:absolute; inset:0; border-radius:8px; z-index:5;
-    background:var(--noise),linear-gradient(155deg,#8c1b25,#520f18);
-    background-size:150px,auto; background-blend-mode:overlay,normal;
+    background:var(--noise),var(--noise),linear-gradient(155deg,#8a1a24,#500e17);
+    background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
     clip-path:polygon(0 8%,50% 52%,100% 8%,100% 100%,0 100%);
     box-shadow:inset 0 16px 26px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--gold);
   }
   .env__flap{
     position:absolute; left:0; right:0; top:0; height:65%; z-index:6;
-    background:var(--noise),linear-gradient(#7a161f,#440b13);
-    background-size:150px,auto; background-blend-mode:overlay,normal;
+    background:var(--noise),var(--noise),linear-gradient(#78151e,#420a12);
+    background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
     clip-path:polygon(0 0,100% 0,50% 100%);
     transform-origin:50% 0; transform:rotateX(0deg) translateZ(0); backface-visibility:hidden;
     transition:transform .85s var(--ease-soft), z-index 0s .42s;
@@ -173,26 +173,32 @@
   }
 
   .env__seal{
-    position:absolute; left:50%; top:44%; width:25%; aspect-ratio:1;
-    transform:translate(-50%,-50%) rotate(-8deg); z-index:7;
-    border-radius:44% 56% 58% 42% / 57% 45% 55% 43%;
-    background:#e7dabc;
+    position:absolute; left:50%; top:44%; width:27%; aspect-ratio:1;
+    transform:translate(-50%,-50%) rotate(-6deg); z-index:7;
+    border-radius:47% 53% 43% 57% / 55% 46% 54% 45%;   /* неровный восковой край */
+    background:radial-gradient(66% 60% at 40% 36%, #efe3c6, #e0d0ac 58%, #cfbc96);
     box-shadow:
-      0 8px 16px rgba(0,0,0,.4),
-      inset 0 0 0 2px rgba(150,124,82,.22),
-      inset 0 -3px 6px rgba(120,96,58,.3),
-      inset 0 3px 4px rgba(255,255,255,.4);
+      0 5px 12px rgba(0,0,0,.4),
+      inset 0 -3px 6px rgba(120,92,56,.3),
+      inset 0 2px 4px rgba(255,255,255,.26);
     transition:opacity .4s ease, transform .5s var(--ease-spring);
   }
-  .env__seal::after{
-    content:""; position:absolute; inset:-12%; z-index:-1;
-    border-radius:53% 47% 57% 43% / 45% 56% 44% 55%;
-    background:#dcccaa; box-shadow:0 6px 12px rgba(0,0,0,.3);
+  .env__seal::after{                 /* асимметричная лужица растёкшегося воска */
+    content:""; position:absolute; inset:-16% -9% -8% -18%; z-index:-1;
+    border-radius:54% 46% 38% 62% / 44% 60% 40% 56%;
+    background:#dbcaa6; box-shadow:0 5px 11px rgba(0,0,0,.26);
   }
-  .env__seal::before{
+  .env__seal .seal-ring{            /* тиснёный концентрический ободок */
+    position:absolute; inset:19%; border-radius:50%;
+    box-shadow:
+      inset 0 0 0 1px rgba(120,92,56,.5),
+      inset 0 0 0 4px rgba(255,252,244,.12),
+      inset 0 0 0 5px rgba(120,92,56,.3);
+  }
+  .env__seal::before{                /* красное сердечко, вдавленное в воск */
     content:"♥"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    color:#cfc19c; font-size:52%; line-height:1;
-    text-shadow:1.5px 1.5px 1px rgba(255,255,255,.5), -1.5px -1.5px 2px rgba(108,84,50,.72);
+    color:#9e1b22; font-size:37%; line-height:1;
+    text-shadow:1px 1px 1px rgba(255,255,255,.45), -1px -1px 1.5px rgba(78,10,14,.5);
   }
   .scene.opened .env__seal{ opacity:0; transform:translate(-50%,-50%) rotate(-8deg) scale(.7); }
 
@@ -291,7 +297,7 @@
 
   <div class="scene" id="scene" role="button" tabindex="0" aria-label="Открыть конверт">
     <div class="env" aria-hidden="true">
-      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
+      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"><span class="seal-ring"></span></div>
     </div>
     <div class="card">
       <div class="card__inner">
@@ -306,7 +312,6 @@
                   <path d="M12 20.2C12 20.2 2.6 14.4 2.6 8.2 A4.7 4.7 0 0 1 12 5.7 A4.7 4.7 0 0 1 21.4 8.2 C21.4 14.4 12 20.2 12 20.2Z"/>
                 </svg>
               </div>
-              <div class="cap" id="caption"></div>
             </div>
           </div>
           <div class="face face--back">
@@ -353,7 +358,6 @@
       Object.keys(mp).forEach(function (k) { if (msg.palette[k]) root.style.setProperty(mp[k], msg.palette[k]); });
     }
 
-    document.getElementById("caption").textContent = msg.title || "";
     document.getElementById("wish").textContent = msg.text || "";
     document.getElementById("sign").textContent = V.signature || "";
     if (V.envelope && V.envelope.label) document.getElementById("tagline").textContent = V.envelope.label;
