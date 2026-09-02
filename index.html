@@ -172,14 +172,15 @@
     mix-blend-mode:multiply; opacity:.9;
   }
 
-  .env__seal{                        /* обрезанный фрагмент фото-сургуча, маска неровного края */
-    position:absolute; left:50%; top:45%; width:33%; aspect-ratio:1;
+  .env__seal{                        /* фото-сургуч; фон вырезается в JS при загрузке */
+    position:absolute; left:50%; top:45%; width:34%; aspect-ratio:1;
     transform:translate(-50%,-50%) rotate(-3deg); z-index:7;
-    border-radius:48% 52% 46% 54% / 53% 47% 54% 46%;
-    background:url("assets/seal.jpg") 48% 50% / 500% auto no-repeat;
-    box-shadow:0 7px 16px rgba(0,0,0,.5);
+    background:url("assets/seal-raw.jpg") center / contain no-repeat;
+    border-radius:47% 53% 45% 55% / 53% 47% 55% 45%;   /* маска — пока фон не вырезан */
+    filter:drop-shadow(0 7px 13px rgba(0,0,0,.5));
     transition:opacity .4s ease, transform .5s var(--ease-spring);
   }
+  .env__seal.seal-cut{ border-radius:0; }              /* фон вырезан — маска не нужна */
   .scene.opened .env__seal{ opacity:0; transform:translate(-50%,-50%) rotate(-8deg) scale(.7); }
 
   /* ─────────── ФОТО-КАРТОЧКА ─────────── */
@@ -319,6 +320,33 @@
 
   function tap() { if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {} }
 
+  /* ---------- вырезать белый фон у сургуча (один раз, картинка маленькая) ---------- */
+  function keySeal() {
+    var el = document.querySelector(".env__seal");
+    if (!el) return;
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var s = 360 / Math.max(img.naturalWidth, img.naturalHeight);
+        var w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var x = c.getContext("2d"); x.drawImage(img, 0, 0, w, h);
+        var im = x.getImageData(0, 0, w, h), d = im.data;
+        var kr = d[0], kg = d[1], kb = d[2], tol = 46, fe = 34;
+        for (var i = 0; i < d.length; i += 4) {
+          var dr = d[i] - kr, dg = d[i + 1] - kg, db = d[i + 2] - kb;
+          var dist = Math.sqrt(dr * dr + dg * dg + db * db);
+          if (dist < tol) d[i + 3] = 0;
+          else if (dist < tol + fe) d[i + 3] = d[i + 3] * (dist - tol) / fe | 0;
+        }
+        x.putImageData(im, 0, 0);
+        el.style.backgroundImage = "url('" + c.toDataURL("image/png") + "')";
+        el.classList.add("seal-cut");
+      } catch (e) {}
+    };
+    img.src = "assets/seal-raw.jpg";
+  }
+
   /* ---------- отрисовка ---------- */
   function render(V) {
     var style = V.style || {}, days = V.days || {}, fallback = V.fallback || { title: "", text: "" };
@@ -351,11 +379,25 @@
       document.getElementById("bg").style.backgroundImage = "url('" + src + "')";
       pic.addEventListener("load", function () {
         try {
-          var c = document.createElement("canvas"); c.width = c.height = 24;
-          var g = c.getContext("2d"); g.drawImage(pic, 0, 0, 24, 24);
-          var d = g.getImageData(0, 0, 24, 24).data, r = 0, gg = 0, b = 0, n = 0;
+          var c = document.createElement("canvas"); c.width = c.height = 32;
+          var g = c.getContext("2d"); g.drawImage(pic, 0, 0, 32, 32);
+          var d = g.getImageData(0, 0, 32, 32).data, r = 0, gg = 0, b = 0, n = 0;
           for (var i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; n++; }
-          root.style.setProperty("--photo-tint", "rgb(" + (r / n | 0) + "," + (gg / n | 0) + "," + (b / n | 0) + ")");
+          r = r / n | 0; gg = gg / n | 0; b = b / n | 0;
+          root.style.setProperty("--photo-tint", "rgb(" + r + "," + gg + "," + b + ")");
+          var mx = Math.max(r, gg, b), mn = Math.min(r, gg, b);
+          var sat = mx ? (mx - mn) / mx : 0;
+          var mix = function (a, t, k) { return Math.round(a + (t - a) * k); };
+          var bg = document.querySelector(".scene-bg");
+          if (bg) {
+            if (sat < 0.14) {
+              bg.style.background = "";                       // ч/б фото → фон по умолчанию (бордо)
+            } else {                                          // цветное → светлый градиент в гамме снимка
+              var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
+              var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
+              bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
+            }
+          }
         } catch (e) {}
       });
     } else { pic.style.display = "none"; }
@@ -401,6 +443,7 @@
   }
 
   /* ---------- запуск ---------- */
+  keySeal();
   var gate = document.getElementById("gate");
   var passIn = document.getElementById("pass");
   var errEl = document.getElementById("err");
