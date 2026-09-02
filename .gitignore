@@ -4,10 +4,12 @@ encrypt.html
 photos/
 *.jpg
 *.jpeg
-*.png
 ref-*.*
 
 # системное
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# декоративные ассеты (кружево, рамки) — их наоборот кладём в репозиторий
+!assets/
