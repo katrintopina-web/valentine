@@ -8,12 +8,12 @@
 <title>Для тебя</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Marck+Script&family=Italianno&family=Pinyon+Script&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Marck+Script&family=Parisienne&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{
     --title-font:"Cormorant Garamond", "Times New Roman", Georgia, serif;
     --script-font:"Marck Script", cursive;
-    --fancy-font:"Italianno", "Pinyon Script", "Marck Script", cursive;
+    --fancy-font:"Parisienne", "Marck Script", cursive;
     --body-font:"Inter", system-ui, -apple-system, sans-serif;
 
     --paper:#f3ebd9;
@@ -102,9 +102,9 @@
 
   /* ─────────── ЗАГОЛОВКИ ─────────── */
   .tagline{
-    position:fixed; top:clamp(30px, 7.5%, 84px); left:0; right:0; z-index:3; text-align:center;
-    font-family:var(--fancy-font); font-size:clamp(2.7rem,11.5vw,4.1rem); line-height:1; letter-spacing:.01em;
-    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    position:fixed; top:clamp(34px, 9%, 90px); left:0; right:0; z-index:3; text-align:center;
+    font-family:var(--fancy-font); font-size:clamp(1.9rem,7.5vw,2.8rem); letter-spacing:.015em;
+    background:var(--tag-fill, var(--gold-line)); -webkit-background-clip:text; background-clip:text; color:transparent;
     filter:drop-shadow(0 2px 3px var(--tag-shadow, rgba(0,0,0,.4)));
     opacity:0; transition:opacity .8s var(--ease-soft) .1s; transform:translateY(-6px);
   }
@@ -132,8 +132,9 @@
   .env{ position:absolute; left:50%; top:50%; width:100%; aspect-ratio:7/5; transform:translate(-50%,-50%); perspective:1100px; }
   .env__back{
     position:absolute; inset:0; border-radius:8px;
-    background:var(--noise),var(--noise),linear-gradient(150deg,var(--eb1,#a9222d),var(--eb2,#721822));
+    background:var(--noise),var(--noise),linear-gradient(150deg,#a9222d,#721822);
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    filter:var(--env-filter, none);
     box-shadow:
       0 2px 4px rgba(0,0,0,.4),
       0 30px 50px -18px rgba(0,0,0,.55),
@@ -142,15 +143,17 @@
   }
   .env__pocket{
     position:absolute; inset:0; border-radius:8px; z-index:5;
-    background:var(--noise),var(--noise),linear-gradient(155deg,var(--ep1,#8a1a24),var(--ep2,#500e17));
+    background:var(--noise),var(--noise),linear-gradient(155deg,#8a1a24,#500e17);
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    filter:var(--env-filter, none);
     clip-path:polygon(0 8%,50% 52%,100% 8%,100% 100%,0 100%);
     box-shadow:inset 0 16px 26px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--gold);
   }
   .env__flap{
     position:absolute; left:0; right:0; top:0; height:65%; z-index:6;
-    background:var(--noise),var(--noise),linear-gradient(var(--ef1,#78151e),var(--ef2,#420a12));
+    background:var(--noise),var(--noise),linear-gradient(#78151e,#420a12);
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    filter:var(--env-filter, none);
     clip-path:polygon(0 0,100% 0,50% 100%);
     transform-origin:50% 0; transform:rotateX(0deg) translateZ(0); backface-visibility:hidden;
     transition:transform .85s var(--ease-soft), z-index 0s .42s;
@@ -394,77 +397,66 @@
       document.getElementById("bg").style.backgroundImage = "url('" + src + "')";
       pic.addEventListener("load", function () {
         try {
-          var c = document.createElement("canvas"); c.width = c.height = 40;
-          var g = c.getContext("2d"); g.drawImage(pic, 0, 0, 40, 40);
-          var d = g.getImageData(0, 0, 40, 40).data;
-          var ar = 0, ag = 0, ab = 0, an = 0, wr = 0, wg = 0, wb = 0, ws = 0;
-          for (var i = 0; i < d.length; i += 4) {
-            var R = d[i], G = d[i + 1], B = d[i + 2];
-            ar += R; ag += G; ab += B; an++;
-            var Mx = Math.max(R, G, B), Mn = Math.min(R, G, B);
-            var L = (Mx + Mn) / 510;
-            if (L < 0.12 || L > 0.93) continue;            // мимо почти чёрного/белого
-            var S = Mx ? (Mx - Mn) / Mx : 0;
-            var w = S * S;                                  // насыщенные пиксели весомее
-            wr += R * w; wg += G * w; wb += B * w; ws += w;
-          }
-          var avgR = ar / an | 0, avgG = ag / an | 0, avgB = ab / an | 0;
-          root.style.setProperty("--photo-tint", "rgb(" + avgR + "," + avgG + "," + avgB + ")");
-
-          var mR, mG, mB;
-          if (ws > 0.4) { mR = wr / ws | 0; mG = wg / ws | 0; mB = wb / ws | 0; }
-          else { mR = avgR; mG = avgG; mB = avgB; }
-          var mmx = Math.max(mR, mG, mB), mmn = Math.min(mR, mG, mB);
-          var moodSat = mmx ? (mmx - mmn) / mmx : 0;
-
-          var hueOf = function (rr, gg2, bb) {
-            rr /= 255; gg2 /= 255; bb /= 255;
-            var Mx = Math.max(rr, gg2, bb), Mn = Math.min(rr, gg2, bb), H;
+          var c = document.createElement("canvas"); c.width = c.height = 32;
+          var g = c.getContext("2d"); g.drawImage(pic, 0, 0, 32, 32);
+          var d = g.getImageData(0, 0, 32, 32).data, r = 0, gg = 0, b = 0, n = 0;
+          for (var i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; n++; }
+          r = r / n | 0; gg = gg / n | 0; b = b / n | 0;
+          root.style.setProperty("--photo-tint", "rgb(" + r + "," + gg + "," + b + ")");
+          var mx = Math.max(r, gg, b), mn = Math.min(r, gg, b);
+          var sat = mx ? (mx - mn) / mx : 0;
+          var mix = function (a, t, k) { return Math.round(a + (t - a) * k); };
+          var bg = document.querySelector(".scene-bg");
+          var hueOf = function (R, G, B) {
+            R /= 255; G /= 255; B /= 255;
+            var Mx = Math.max(R, G, B), Mn = Math.min(R, G, B), H;
             if (Mx === Mn) return 0;
             var dd = Mx - Mn;
-            if (Mx === rr) H = ((gg2 - bb) / dd) % 6;
-            else if (Mx === gg2) H = (bb - rr) / dd + 2;
-            else H = (rr - gg2) / dd + 4;
+            if (Mx === R) H = ((G - B) / dd) % 6;
+            else if (Mx === G) H = (B - R) / dd + 2;
+            else H = (R - G) / dd + 4;
             H = Math.round(H * 60); if (H < 0) H += 360; return H;
           };
-          var hsl = function (h, s, l) { return "hsl(" + h + " " + s + "% " + l + "%)"; };
-
-          var bg = document.querySelector(".scene-bg");
-          var VARS = ["--tag-shadow", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh",
-            "--lace-filter", "--lace-opacity", "--mat",
-            "--eb1", "--eb2", "--ep1", "--ep2", "--ef1", "--ef2"];
-
-          if (moodSat < 0.16) {
-            // бесцветное / ч/б фото → бордовая система по умолчанию
+          var clamp = function (v) { return v < 0 ? 0 : v > 255 ? 255 : v | 0; };
+          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh", "--lace-filter", "--lace-opacity", "--env-filter", "--mat"];
+          if (sat < 0.14) {
+            // ч/б фото → бордо во всём (значения по умолчанию)
             if (bg) bg.style.background = "";
-            VARS.forEach(function (v) { root.style.removeProperty(v); });
-            return;
+            vars.forEach(function (v) { root.style.removeProperty(v); });
+          } else {
+            // усиливаем насыщенность средней (кадр часто сероват из-за песка/белого)
+            var mid = (Math.max(r, gg, b) + Math.min(r, gg, b)) / 2;
+            var sR = clamp(mid + (r - mid) * 1.8), sG = clamp(mid + (gg - mid) * 1.8), sB = clamp(mid + (b - mid) * 1.8);
+
+            // фон + паспарту = светлый тёплый оттенок гаммы
+            var lite = "rgb(" + mix(sR, 255, .58) + "," + mix(sG, 255, .58) + "," + mix(sB, 255, .58) + ")";
+            var deep = "rgb(" + mix(sR, 22, .5) + "," + mix(sG, 22, .5) + "," + mix(sB, 22, .5) + ")";
+            if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
+            root.style.setProperty("--mat", "rgb(" + mix(sR, 255, .66) + "," + mix(sG, 255, .66) + "," + mix(sB, 255, .66) + ")");
+
+            // «for you» — антик-золото с лёгким уклоном в гамму, не тёмное
+            var aR = mix(mix(172, sR, .2), 30, .06), aG = mix(mix(132, sG, .2), 30, .06), aB = mix(mix(70, sB, .2), 30, .06);
+            root.style.setProperty("--tag-fill", "linear-gradient(180deg,rgb(" + aR + "," + aG + "," + aB + "),rgb(" + mix(aR, 10, .28) + "," + mix(aG, 10, .28) + "," + mix(aB, 10, .28) + "))");
+            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.5)");
+
+            // дата (сверху, на светлом) — тёмная с тёплым отливом + светлый ореол
+            var tR = mix(sR, 18, .78), tG = mix(sG, 18, .78), tB = mix(sB, 18, .78);
+            root.style.setProperty("--fg-top", "rgba(" + tR + "," + tG + "," + tB + ",.9)");
+            root.style.setProperty("--fg-top-sh", "0 1px 2px rgba(255,255,255,.55)");
+            // «коснись фото» (снизу, на тёмном) — светлая с тёмным ореолом
+            root.style.setProperty("--fg-bot", "rgba(248,242,232,.82)");
+            root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.45)");
+
+            // конверт — благородный сдвиг оттенка (±26°), тон остаётся глубоким
+            var rot = hueOf(sR, sG, sB) - 350;
+            if (rot > 180) rot -= 360; if (rot < -180) rot += 360;
+            var envF = "hue-rotate(" + Math.max(-26, Math.min(26, Math.round(rot))) + "deg) saturate(.94) brightness(.98)";
+            root.style.setProperty("--env-filter", envF);
+
+            // кружево — ровно в цвет конверта (та же коррекция), чуть прозрачнее
+            root.style.setProperty("--lace-filter", envF);
+            root.style.setProperty("--lace-opacity", ".9");
           }
-
-          var h = hueOf(mR, mG, mB);
-
-          // ── ФОН + ПАСПАРТУ ── светлые, малонасыщенные, в оттенке
-          if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + hsl(h, 26, 90) + ", " + hsl(h, 22, 30) + " 94%)";
-          root.style.setProperty("--mat", hsl(h, 24, 92));
-
-          // ── КОНВЕРТ ── глубокий насыщенный самоцвет того же тона, слои темнеют
-          root.style.setProperty("--eb1", hsl(h, 58, 37)); root.style.setProperty("--eb2", hsl(h, 62, 22));
-          root.style.setProperty("--ep1", hsl(h, 58, 31)); root.style.setProperty("--ep2", hsl(h, 62, 17));
-          root.style.setProperty("--ef1", hsl(h, 60, 26)); root.style.setProperty("--ef2", hsl(h, 64, 13));
-
-          // ── КРУЖЕВО ── перекрашиваем PNG в тон конверта
-          root.style.setProperty("--lace-filter",
-            "grayscale(1) sepia(1) saturate(2.1) hue-rotate(" + (h - 40) + "deg) brightness(1)");
-          root.style.setProperty("--lace-opacity", ".9");
-
-          // ── НАДПИСИ ── дата тёмная на светлом, подсказка светлая на тёмном
-          root.style.setProperty("--fg-top", hsl(h, 30, 23));
-          root.style.setProperty("--fg-top-sh", "0 1px 2px rgba(255,255,255,.6)");
-          root.style.setProperty("--fg-bot", "rgba(250,244,235,.86)");
-          root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.4)");
-
-          // «for you» и сердечко — ВСЕГДА золото; на светлом лишь лёгкий тёмный ореол
-          root.style.setProperty("--tag-shadow", "rgba(52,36,10,.32)");
         } catch (e) {}
       });
     } else { pic.style.display = "none"; }
