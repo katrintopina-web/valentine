@@ -20,6 +20,7 @@
     --ink:#3b2c1b;
     --muted:#8a7a63;
     --accent:#7a1f2b;
+    --bordo:#7a1f2b;              /* фиксированный бордо — подпись всегда им */
     --photo-tint:#6a1f28;
 
     --gold:rgba(214,180,116,.30);
@@ -132,6 +133,7 @@
     position:absolute; inset:0; border-radius:8px;
     background:var(--noise),var(--noise),linear-gradient(150deg,#a9222d,#721822);
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    filter:var(--env-filter, none);
     box-shadow:
       0 2px 4px rgba(0,0,0,.4),
       0 30px 50px -18px rgba(0,0,0,.55),
@@ -142,6 +144,7 @@
     position:absolute; inset:0; border-radius:8px; z-index:5;
     background:var(--noise),var(--noise),linear-gradient(155deg,#8a1a24,#500e17);
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    filter:var(--env-filter, none);
     clip-path:polygon(0 8%,50% 52%,100% 8%,100% 100%,0 100%);
     box-shadow:inset 0 16px 26px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--gold);
   }
@@ -149,6 +152,7 @@
     position:absolute; left:0; right:0; top:0; height:65%; z-index:6;
     background:var(--noise),var(--noise),linear-gradient(#78151e,#420a12);
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    filter:var(--env-filter, none);
     clip-path:polygon(0 0,100% 0,50% 100%);
     transform-origin:50% 0; transform:rotateX(0deg) translateZ(0); backface-visibility:hidden;
     transition:transform .85s var(--ease-soft), z-index 0s .42s;
@@ -170,6 +174,7 @@
     content:""; position:absolute; left:-8%; right:-8%; top:-2%; height:118%;
     background:url("assets/lace.png") center -4% / 220% auto no-repeat;
     mix-blend-mode:multiply; opacity:.9;
+    filter:var(--lace-filter, none);
   }
 
   .env__seal{                        /* фото-сургуч; фон по возможности вырезается в JS */
@@ -250,8 +255,8 @@
   .wish .occ:empty{ display:none; }
   .wish .body{ max-width:15.5rem; font-family:var(--title-font); font-style:italic; font-weight:500; font-size:clamp(1.14rem,4.4vw,1.46rem); line-height:1.5; color:var(--ink); white-space:pre-line; }
   .wish .dot3{ display:flex; gap:7px; margin:16px 0 12px; }
-  .wish .dot3 i{ width:4px; height:4px; border-radius:50%; background:var(--accent); opacity:.8; }
-  .wish .sign{ font-family:var(--script-font); font-size:1.55rem; color:var(--accent); }
+  .wish .dot3 i{ width:4px; height:4px; border-radius:50%; background:var(--bordo); opacity:.8; }
+  .wish .sign{ font-family:var(--script-font); font-size:1.55rem; color:var(--bordo); }
   .wish .sign .heart{ display:inline-block; margin-left:.14em; font-size:.8em; }
 
   .hint{
@@ -418,6 +423,7 @@
             root.style.removeProperty("--fg-soft");
             root.style.removeProperty("--lace-filter");
             root.style.removeProperty("--lace-opacity");
+            root.style.removeProperty("--env-filter");
           } else {
             // цветное фото → светлый градиент в гамме снимка
             var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
@@ -440,6 +446,10 @@
             rot = Math.max(-45, Math.min(45, Math.round(rot)));
             root.style.setProperty("--lace-filter", "sepia(.35) saturate(.85) hue-rotate(" + rot + "deg) brightness(.95)");
             root.style.setProperty("--lace-opacity", ".88");
+
+            // конверт → тот же благородный сдвиг, но мягче (±30°), тон остаётся глубоким
+            var erot = Math.max(-30, Math.min(30, rot));
+            root.style.setProperty("--env-filter", "hue-rotate(" + erot + "deg) saturate(.92) brightness(.98)");
           }
         } catch (e) {}
       });
