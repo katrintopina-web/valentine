@@ -100,19 +100,23 @@
   .gate__err{ color:#ffb3b3; font-size:.8rem; margin-top:12px; min-height:1em; }
 
   /* ─────────── ЗАГОЛОВКИ ─────────── */
+  .tag-wrap{
+    position:fixed; top:7%; left:0; right:0; z-index:3;
+    display:flex; flex-direction:column; align-items:center; gap:.35rem;
+    opacity:0; transform:translateY(-6px); transition:opacity .8s var(--ease-soft) .1s, transform .8s var(--ease-soft) .1s;
+  }
   .tagline{
-    position:fixed; top:7%; left:0; right:0; z-index:3; text-align:center;
-    font-family:var(--fancy-font); font-size:clamp(1.9rem,7.5vw,2.8rem); letter-spacing:.015em;
+    font-family:var(--fancy-font); font-size:clamp(1.9rem,7.5vw,2.8rem); letter-spacing:.015em; line-height:1;
     background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
     filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
-    opacity:0; transition:opacity .8s var(--ease-soft) .1s; transform:translateY(-6px);
   }
+  .crest{ width:clamp(17px,4.4vw,23px); height:auto; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .kicker{
     position:fixed; top:26px; left:0; right:0; z-index:3; text-align:center;
     color:rgba(243,231,220,.42); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
     opacity:0; transition:opacity .8s ease;
   }
-  .revealed .tagline{ opacity:1; transform:none; }
+  .revealed .tag-wrap{ opacity:1; transform:none; }
   .revealed .kicker, .revealed .hint{ opacity:1; }
 
   /* ─────────── СЦЕНА ─────────── */
@@ -222,10 +226,13 @@
     position:relative; width:100%; aspect-ratio:4/5; background:#f4ecdd; padding:8px;
     box-shadow:0 2px 4px rgba(20,6,0,.35), 0 26px 44px -22px rgba(0,0,0,.6);
   }
-  /* узкая кайма настоящего кружева вокруг фото (серединка PNG отбрасывается) */
-  .paper.framed{
+  /* узкая кайма настоящего кружева. multiply смешивает серый фон PNG
+     с кремовой бумагой — цвет полоски совпадает с цветом фото-паспарту */
+  .paper.framed::before{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
     border:18px solid transparent;
     border-image:url("assets/lace.png") 215 / 18px / 0 round;
+    mix-blend-mode:multiply;
   }
   .paper img{ display:block; width:100%; height:100%; object-fit:cover; }
 
@@ -236,6 +243,7 @@
     background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
     filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));
   }
+  .cap:empty{ display:none; }
   .cap::before{
     content:""; position:absolute; inset:0; z-index:-1;
     background:linear-gradient(transparent,rgba(0,0,0,.16),rgba(0,0,0,.58));
@@ -266,7 +274,15 @@
   <div class="scene-bg" aria-hidden="true"></div>
   <div id="bg" aria-hidden="true"></div>
   <div class="kicker" id="kicker"></div>
-  <div class="tagline" id="tagline">for you</div>
+  <div class="tag-wrap">
+    <span class="tagline" id="tagline">for you</span>
+    <svg class="crest" viewBox="0 0 24 22" fill="none" stroke="url(#crestG)" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true">
+      <defs><linearGradient id="crestG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f6e7c8"/><stop offset=".5" stop-color="#e6c887"/><stop offset="1" stop-color="#c9a25e"/>
+      </linearGradient></defs>
+      <path d="M12 20.2C12 20.2 2.6 14.4 2.6 8.2 A4.7 4.7 0 0 1 12 5.7 A4.7 4.7 0 0 1 21.4 8.2 C21.4 14.4 12 20.2 12 20.2Z"/>
+    </svg>
+  </div>
 
   <div class="gate" id="gate">
     <div class="gate__panel">
@@ -408,7 +424,7 @@
   if (!window.VALENTINE && location.search.indexOf("demo") > -1) {
     var dk = new Date(); var kk = dk.getFullYear() + "-" + String(dk.getMonth() + 1).padStart(2, "0") + "-" + String(dk.getDate()).padStart(2, "0");
     window.VALENTINE = { style: { titleFont: "Cormorant" }, envelope: { label: "for you" }, signature: "твоя любимая", fallback: { title: "", text: "" }, days: {} };
-    window.VALENTINE.days[kk] = { title: "Наше утро", text: "Помнишь этот день?\nЯ хочу ещё сто таких — с тобой.",
+    window.VALENTINE.days[kk] = { title: "", text: "Помнишь этот день?\nЯ хочу ещё сто таких — с тобой.",
       img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23c39b78'/%3E%3Cstop offset='1' stop-color='%233a2b26'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' fill='url(%23g)'/%3E%3C/svg%3E",
       palette: { paper: "#f4ecdd", ink: "#2c2723", accent: "#b0865f" } };
   }
