@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#1a070c" />
+<title>Для тебя</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Marck+Script&family=Parisienne&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --title-font:"Cormorant Garamond", "Times New Roman", Georgia, serif;
+    --script-font:"Marck Script", cursive;
+    --fancy-font:"Parisienne", "Marck Script", cursive;
+    --body-font:"Inter", system-ui, -apple-system, sans-serif;
+
+    --paper:#f3ebd9;
+    --ink:#3b2c1b;
+    --muted:#8a7a63;
+    --accent:#7a1f2b;
+    --photo-tint:#6a1f28;
+
+    --gold:rgba(214,180,116,.30);
+    --gold-line:linear-gradient(180deg,#f6e7c8,#e6c887 45%,#c9a25e 55%,#f3e6c6);
+
+    --ease-spring:cubic-bezier(.34,1.56,.64,1);
+    --ease-soft:cubic-bezier(.22,1,.36,1);
+
+    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+    --scallop-h:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M0 0 H22 V6 Q22 16 11 16 Q0 16 0 6 Z' fill='%235c1622' opacity='0.92'/%3E%3Ccircle cx='11' cy='6' r='1.7' fill='%23f3ebd9'/%3E%3Cline x1='11' y1='16' x2='11' y2='18.5' stroke='%235c1622' stroke-width='1'/%3E%3Cline x1='6' y1='15' x2='4' y2='18' stroke='%235c1622' stroke-width='0.8'/%3E%3Cline x1='16' y1='15' x2='18' y2='18' stroke='%235c1622' stroke-width='0.8'/%3E%3C/svg%3E");
+    --scallop-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='22' viewBox='0 0 18 22'%3E%3Cpath d='M0 0 V22 H6 Q16 22 16 11 Q16 0 6 0 Z' fill='%235c1622' opacity='0.92'/%3E%3Ccircle cx='6' cy='11' r='1.7' fill='%23f3ebd9'/%3E%3Cline x1='16' y1='11' x2='18.5' y2='11' stroke='%235c1622' stroke-width='1'/%3E%3Cline x1='15' y1='6' x2='18' y2='4' stroke='%235c1622' stroke-width='0.8'/%3E%3Cline x1='15' y1='16' x2='18' y2='18' stroke='%235c1622' stroke-width='0.8'/%3E%3C/svg%3E");
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--body-font); color:#f3e7dc; background:#12060a;
+    min-height:100%; display:flex; align-items:center; justify-content:center;
+    padding:max(40px,env(safe-area-inset-top)) 22px max(40px,env(safe-area-inset-bottom));
+    overflow-x:hidden; -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ─────────── ФОН: живой aurora-градиент ─────────── */
+  .scene-bg{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(46% 42% at 20% 16%, #83202e 0%, rgba(131,32,46,0) 62%),
+      radial-gradient(52% 46% at 84% 10%, #5c1622 0%, rgba(92,22,34,0) 58%),
+      radial-gradient(60% 58% at 74% 92%, #240910 0%, rgba(36,9,16,0) 60%),
+      radial-gradient(58% 52% at 12% 88%, #3a0f19 0%, rgba(58,15,25,0) 58%),
+      linear-gradient(180deg,#4c1019 0%,#1c070d 55%,#080305 100%);
+  }
+  .scene-bg::after{
+    content:""; position:absolute; inset:0;
+    background:var(--noise); background-size:150px; mix-blend-mode:overlay; opacity:.4;
+    box-shadow:inset 0 0 200px 30px rgba(0,0,0,.5);
+  }
+  #bg{
+    position:fixed; inset:-40px; z-index:0; background-size:cover; background-position:center;
+    filter:blur(26px) saturate(.9) brightness(.5); opacity:0; transform:scale(1.12);
+    transition:opacity 1.2s ease;
+  }
+  .revealed #bg{ opacity:.10; }
+
+  /* ─────────── ВОРОТА С ПАРОЛЕМ (матовое стекло) ─────────── */
+  .gate{ position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:24px; transition:opacity .6s var(--ease-soft); }
+  .gate.hide{ opacity:0; pointer-events:none; }
+  .gate__panel{
+    text-align:center; max-width:330px; width:100%;
+    background:rgba(28,9,14,.34);
+    -webkit-backdrop-filter:blur(16px) saturate(1.3); backdrop-filter:blur(16px) saturate(1.3);
+    border:1px solid rgba(230,200,150,.22); border-radius:20px;
+    padding:30px 26px 26px;
+    box-shadow:0 40px 80px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.09);
+  }
+  .gate__title{
+    font-family:var(--fancy-font); font-size:2.6rem; line-height:1; margin-bottom:8px;
+    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));
+  }
+  .gate__hint{ color:rgba(243,231,220,.6); font-size:.82rem; margin-bottom:20px; }
+  .gate__row{ display:flex; gap:8px; }
+  .gate input{
+    flex:1; min-width:0; padding:12px 14px; border-radius:11px; border:1px solid rgba(230,200,150,.28);
+    background:rgba(255,255,255,.06); color:#f5ece0; font-family:var(--body-font); font-size:1rem; outline:none;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .gate input:focus{ border-color:rgba(230,200,150,.6); background:rgba(255,255,255,.1); }
+  .gate button{
+    padding:12px 18px; border:0; border-radius:11px; cursor:pointer; flex:none;
+    background:linear-gradient(180deg,#a5232f,#7c1722); color:#fdeee2;
+    font-family:var(--title-font); font-style:italic; font-size:1.06rem;
+    box-shadow:0 8px 20px -8px rgba(140,20,30,.7), inset 0 1px 0 rgba(255,255,255,.15);
+    transition:transform .4s var(--ease-spring);
+  }
+  .gate button:active{ transform:scale(.94); }
+  .gate__err{ color:#ffb3b3; font-size:.8rem; margin-top:12px; min-height:1em; }
+
+  /* ─────────── ЗАГОЛОВКИ ─────────── */
+  .tagline{
+    position:fixed; top:7%; left:0; right:0; z-index:3; text-align:center;
+    font-family:var(--fancy-font); font-size:clamp(1.9rem,7.5vw,2.8rem); letter-spacing:.015em;
+    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
+    opacity:0; transition:opacity .8s var(--ease-soft) .1s; transform:translateY(-6px);
+  }
+  .kicker{
+    position:fixed; top:26px; left:0; right:0; z-index:3; text-align:center;
+    color:rgba(243,231,220,.42); font-size:.64rem; letter-spacing:.32em; text-transform:uppercase;
+    opacity:0; transition:opacity .8s ease;
+  }
+  .revealed .tagline{ opacity:1; transform:none; }
+  .revealed .kicker, .revealed .hint{ opacity:1; }
+
+  /* ─────────── СЦЕНА ─────────── */
+  .scene{
+    position:relative; z-index:2;
+    width:min(86vw,336px); height:min(78vh,536px);
+    cursor:pointer; outline:none;
+    opacity:0; transition:opacity .7s var(--ease-soft), transform .5s var(--ease-spring);
+    transform-style:preserve-3d;
+  }
+  .revealed .scene{ opacity:1; }
+  .scene.press{ transform:scale(.975); }
+
+  /* ─────────── КОНВЕРТ ─────────── */
+  .env{ position:absolute; left:50%; top:50%; width:100%; aspect-ratio:7/5; transform:translate(-50%,-50%); perspective:1100px; }
+  .env__back{
+    position:absolute; inset:0; border-radius:8px;
+    background:var(--noise),var(--noise),linear-gradient(150deg,#a9222d,#721822);
+    background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,.4),
+      0 30px 50px -18px rgba(0,0,0,.55),
+      0 60px 90px -30px rgba(70,10,20,.6),
+      inset 0 0 0 1px var(--gold);
+  }
+  .env__pocket{
+    position:absolute; inset:0; border-radius:8px; z-index:5;
+    background:var(--noise),var(--noise),linear-gradient(155deg,#8a1a24,#500e17);
+    background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    clip-path:polygon(0 8%,50% 52%,100% 8%,100% 100%,0 100%);
+    box-shadow:inset 0 16px 26px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--gold);
+  }
+  .env__flap{
+    position:absolute; left:0; right:0; top:0; height:65%; z-index:6;
+    background:var(--noise),var(--noise),linear-gradient(#78151e,#420a12);
+    background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    transform-origin:50% 0; transform:rotateX(0deg) translateZ(0); backface-visibility:hidden;
+    transition:transform .85s var(--ease-soft), z-index 0s .42s;
+    box-shadow:0 3px 8px rgba(0,0,0,.35); will-change:transform;
+  }
+  .env__flap::after{ content:""; position:absolute; inset:0; background:linear-gradient(#fff2,transparent 40%); mix-blend-mode:soft-light; }
+  .scene.opened .env__flap{ transform:rotateX(-164deg) translateZ(0); z-index:1; }
+
+  /* кружевная подкладка — видна на развороте открытого конверта */
+  .env__lining{
+    position:absolute; left:0; right:0; top:0; height:54%; z-index:4;
+    background:#f8f5ef;
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    box-shadow:inset 0 0 26px rgba(150,130,105,.2);
+    opacity:0; transition:opacity .5s ease .4s;
+  }
+  .scene.opened .env__lining{ opacity:1; }
+  .env__lining::after{
+    content:""; position:absolute; left:-8%; right:-8%; top:-2%; height:118%;
+    background:url("assets/lace.png") center -4% / 220% auto no-repeat;
+    mix-blend-mode:multiply; opacity:.9;
+  }
+
+  .env__seal{                        /* фото-сургуч; фон вырезается в JS при загрузке */
+    position:absolute; left:50%; top:45%; width:29%; aspect-ratio:1;
+    transform:translate(-50%,-50%) rotate(-3deg); z-index:7;
+    background:url("assets/seal-raw.jpg") center / contain no-repeat;
+    border-radius:47% 53% 45% 55% / 53% 47% 55% 45%;   /* маска — пока фон не вырезан */
+    filter:drop-shadow(0 7px 13px rgba(0,0,0,.5));
+    transition:opacity .4s ease, transform .5s var(--ease-spring);
+  }
+  .env__seal.seal-cut{ border-radius:0; }              /* фон вырезан — маска не нужна */
+  .scene.opened .env__seal{ opacity:0; transform:translate(-50%,-50%) rotate(-8deg) scale(.7); }
+
+  /* ─────────── ФОТО-КАРТОЧКА ─────────── */
+  .card{
+    position:absolute; left:50%; top:50%; width:88%;
+    transform:translate(-50%,-24%) scale(.9); opacity:0; z-index:4; perspective:1500px;
+    transition:transform .9s var(--ease-spring) .42s, opacity .55s ease .42s;
+  }
+  .scene.opened .card{ transform:translate(-50%,-52%) scale(1); opacity:1; z-index:9; }
+  .card::after{
+    content:""; position:absolute; inset:-16% -16% -4%; z-index:-1;
+    background:radial-gradient(closest-side, var(--photo-tint), transparent 74%);
+    opacity:.5; filter:blur(34px);
+  }
+  .card__inner{ position:relative; width:100%; transform-style:preserve-3d; transition:transform .7s cubic-bezier(.45,.05,.35,1); will-change:transform; }
+  .scene.flipped .card__inner{ transform:rotateY(180deg); }
+  .face{ position:relative; width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+  /* грань, что УХОДИТ — прячется с задержкой (когда уже повернулась ребром);
+     грань, что ПОЯВЛЯЕТСЯ — включается сразу (её держит backface-visibility) */
+  .face--front{ transform:rotateY(0deg); visibility:visible; transition:visibility 0s 0s; }
+  .face--back{ position:absolute; inset:0; transform:rotateY(180deg); visibility:hidden; transition:visibility 0s .24s; }
+  .scene.flipped .face--front{ visibility:hidden; transition:visibility 0s .24s; }
+  .scene.flipped .face--back{ visibility:visible; transition:visibility 0s 0s; }
+
+  .paper{
+    position:relative; width:100%; aspect-ratio:4/5; background:#f4ecdd; padding:8px;
+    box-shadow:0 2px 4px rgba(20,6,0,.35), 0 26px 44px -22px rgba(0,0,0,.6);
+  }
+  /* лицевое фото: широкое кремовое паспарту, кружево лежит на нём с отступом от фото */
+  .paper.framed{ padding:34px; }
+  .paper.framed::before{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    border:24px solid transparent;
+    border-image:url("assets/lace.png") 215 / 24px / 0 round;
+    mix-blend-mode:multiply;   /* серый фон PNG смешивается с кремовым паспарту */
+  }
+  .paper img{ display:block; width:100%; height:100%; object-fit:cover; }
+
+  .photo-sign{                       /* «моему мужу» — деликатно, курсивом, золотом */
+    position:absolute; left:0; right:0; bottom:10%; z-index:2; text-align:center; pointer-events:none;
+    font-family:var(--title-font); font-style:italic; letter-spacing:.02em;
+    font-size:clamp(.98rem,4vw,1.2rem);
+    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 7px rgba(0,0,0,.7));
+  }
+
+  .cap{
+    position:absolute; left:0; right:0; bottom:0; z-index:2; padding:64px 20px 18px;
+    font-family:var(--title-font); font-style:italic; font-weight:600; text-align:center;
+    font-size:clamp(1.12rem,4.6vw,1.4rem); line-height:1.32; letter-spacing:.02em;
+    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));
+  }
+  .cap:empty{ display:none; }
+  .cap::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background:linear-gradient(transparent,rgba(0,0,0,.16),rgba(0,0,0,.58));
+  }
+
+  .letter{ background:var(--paper); }
+  .wish{ position:absolute; inset:15px; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:22px; text-align:center; }
+  .wish .occ{ font-family:var(--body-font); font-size:.64rem; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .wish .occ:empty{ display:none; }
+  .wish .body{ max-width:15.5rem; font-family:var(--title-font); font-style:italic; font-weight:500; font-size:clamp(1.14rem,4.4vw,1.46rem); line-height:1.5; color:var(--ink); white-space:pre-line; }
+  .wish .dot3{ display:flex; gap:7px; margin:16px 0 12px; }
+  .wish .dot3 i{ width:4px; height:4px; border-radius:50%; background:var(--accent); opacity:.8; }
+  .wish .sign{ font-family:var(--script-font); font-size:1.55rem; color:var(--accent); }
+  .wish .sign .heart{ display:inline-block; margin-left:.14em; font-size:.8em; }
+
+  .hint{
+    position:fixed; left:0; right:0; bottom:max(30px,env(safe-area-inset-bottom)); z-index:3; text-align:center;
+    color:rgba(243,231,220,.5); font-size:.74rem; letter-spacing:.14em;
+    opacity:0; animation:pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.32} 50%{opacity:.75} }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.001s!important; animation:none!important}
+    .scene-bg::before{ animation:none }
+  }
+</style>
+</head>
+<body>
+  <div class="scene-bg" aria-hidden="true"></div>
+  <div id="bg" aria-hidden="true"></div>
+  <div class="kicker" id="kicker"></div>
+  <div class="tagline" id="tagline">for you</div>
+
+  <div class="gate" id="gate">
+    <div class="gate__panel">
+      <div class="gate__title">for you</div>
+      <div class="gate__hint">введи пароль, который тебе прислали</div>
+      <div class="gate__row">
+        <input id="pass" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="пароль" />
+        <button id="go">Открыть</button>
+      </div>
+      <div class="gate__err" id="err"></div>
+    </div>
+  </div>
+
+  <div class="scene" id="scene" role="button" tabindex="0" aria-label="Открыть конверт">
+    <div class="env" aria-hidden="true">
+      <div class="env__back"></div><div class="env__lining"></div><div class="env__pocket"></div><div class="env__flap"></div><div class="env__seal"></div>
+    </div>
+    <div class="card">
+      <div class="card__inner">
+          <div class="face face--front">
+            <div class="paper framed">
+              <img id="pic" alt="" />
+              <div class="photo-sign" id="photoSign">моему мужу</div>
+            </div>
+          </div>
+          <div class="face face--back">
+            <div class="paper letter">
+              <div class="wish">
+                <div class="occ" id="occ"></div>
+                <div class="body" id="wish"></div>
+                <div class="dot3"><i></i><i></i><i></i></div>
+                <div class="sign"><span id="sign"></span> <span class="heart">♥</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="hint" id="hint">нажми на конверт</div>
+
+<script src="messages.js"></script>
+<script>
+(function () {
+  "use strict";
+  var LS_KEY = "valentine_pass";
+  var RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var FINE = window.matchMedia && matchMedia("(pointer: fine)").matches;
+
+  function tap() { if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {} }
+
+  /* ---------- вырезать белый фон у сургуча (один раз, картинка маленькая) ---------- */
+  function keySeal() {
+    var el = document.querySelector(".env__seal");
+    if (!el) return;
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var s = 360 / Math.max(img.naturalWidth, img.naturalHeight);
+        var w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var x = c.getContext("2d"); x.drawImage(img, 0, 0, w, h);
+        var im = x.getImageData(0, 0, w, h), d = im.data;
+        var kr = d[0], kg = d[1], kb = d[2], tol = 46, fe = 34;
+        for (var i = 0; i < d.length; i += 4) {
+          var dr = d[i] - kr, dg = d[i + 1] - kg, db = d[i + 2] - kb;
+          var dist = Math.sqrt(dr * dr + dg * dg + db * db);
+          if (dist < tol) d[i + 3] = 0;
+          else if (dist < tol + fe) d[i + 3] = d[i + 3] * (dist - tol) / fe | 0;
+        }
+        x.putImageData(im, 0, 0);
+        el.style.backgroundImage = "url('" + c.toDataURL("image/png") + "')";
+        el.classList.add("seal-cut");
+      } catch (e) {}
+    };
+    img.src = "assets/seal-raw.jpg";
+  }
+
+  /* ---------- отрисовка ---------- */
+  function render(V) {
+    var style = V.style || {}, days = V.days || {}, fallback = V.fallback || { title: "", text: "" };
+    var root = document.documentElement;
+    var fonts = { "Cormorant": '"Cormorant Garamond", Georgia, serif', "Marck": '"Marck Script", cursive', "Parisienne": '"Parisienne", cursive' };
+    if (fonts[style.titleFont]) root.style.setProperty("--title-font", fonts[style.titleFont]);
+
+    var now = new Date();
+    var p = function (n) { return String(n).padStart(2, "0"); };
+    var key = now.getFullYear() + "-" + p(now.getMonth() + 1) + "-" + p(now.getDate());
+    var msg = days[key];
+    if (!msg) { var pk = Object.keys(days).filter(function (k) { return k <= key; }).sort(); if (pk.length) msg = days[pk[pk.length - 1]]; }
+    if (!msg) msg = fallback;
+
+    if (msg.palette) {
+      var mp = { paper: "--paper", ink: "--ink", muted: "--muted", accent: "--accent" };
+      Object.keys(mp).forEach(function (k) { if (msg.palette[k]) root.style.setProperty(mp[k], msg.palette[k]); });
+    }
+
+    document.getElementById("wish").textContent = msg.text || "";
+    document.getElementById("occ").textContent = msg.occasion || "";
+    document.getElementById("sign").textContent = V.signature || "";
+    if (V.dedication) document.getElementById("photoSign").textContent = V.dedication;
+    if (V.envelope && V.envelope.label) document.getElementById("tagline").textContent = V.envelope.label;
+    try { document.getElementById("kicker").textContent = now.toLocaleDateString("ru-RU", { day: "numeric", month: "long" }); } catch (e) {}
+    document.title = msg.title ? msg.title + " ♡" : "Для тебя";
+
+    var pic = document.getElementById("pic");
+    var src = msg.img || msg.image || "";
+    if (src) {
+      pic.src = src; pic.alt = msg.title || "";
+      document.getElementById("bg").style.backgroundImage = "url('" + src + "')";
+      pic.addEventListener("load", function () {
+        try {
+          var c = document.createElement("canvas"); c.width = c.height = 32;
+          var g = c.getContext("2d"); g.drawImage(pic, 0, 0, 32, 32);
+          var d = g.getImageData(0, 0, 32, 32).data, r = 0, gg = 0, b = 0, n = 0;
+          for (var i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; n++; }
+          r = r / n | 0; gg = gg / n | 0; b = b / n | 0;
+          root.style.setProperty("--photo-tint", "rgb(" + r + "," + gg + "," + b + ")");
+          var mx = Math.max(r, gg, b), mn = Math.min(r, gg, b);
+          var sat = mx ? (mx - mn) / mx : 0;
+          var mix = function (a, t, k) { return Math.round(a + (t - a) * k); };
+          var bg = document.querySelector(".scene-bg");
+          if (bg) {
+            if (sat < 0.14) {
+              bg.style.background = "";                       // ч/б фото → фон по умолчанию (бордо)
+            } else {                                          // цветное → светлый градиент в гамме снимка
+              var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
+              var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
+              bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
+            }
+          }
+        } catch (e) {}
+      });
+    } else { pic.style.display = "none"; }
+
+    document.body.classList.add("revealed");
+
+    var scene = document.getElementById("scene");
+    var hint = document.getElementById("hint");
+    var opened = false;
+
+    function act() {
+      if (!opened) {
+        opened = true; scene.classList.add("opened"); hint.textContent = "коснись фото"; tap();
+      } else {
+        scene.classList.toggle("flipped"); tap();
+        var f = scene.classList.contains("flipped");
+        hint.style.opacity = f ? "0" : ""; hint.style.animation = f ? "none" : "";
+      }
+    }
+    scene.addEventListener("click", act);
+    scene.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); } });
+
+    /* тактильный отклик на нажатие */
+    scene.addEventListener("pointerdown", function () { scene.classList.add("press"); });
+    window.addEventListener("pointerup", function () { scene.classList.remove("press"); });
+    window.addEventListener("pointercancel", function () { scene.classList.remove("press"); });
+
+    var midnight = new Date(now); midnight.setHours(24, 0, 5, 0);
+    setTimeout(function () { location.reload(); }, midnight - now);
+  }
+
+  /* ---------- расшифровка vault.enc ---------- */
+  async function deriveKey(pass, salt) {
+    var km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: 150000, hash: "SHA-256" },
+      km, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  }
+  async function decryptVault(buf, pass) {
+    var b = new Uint8Array(buf);
+    var key = await deriveKey(pass, b.slice(0, 16));
+    var plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(16, 28) }, key, b.slice(28));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  /* ---------- запуск ---------- */
+  keySeal();
+  var gate = document.getElementById("gate");
+  var passIn = document.getElementById("pass");
+  var errEl = document.getElementById("err");
+
+  // демо-режим для проверки дизайна: ...?demo
+  if (!window.VALENTINE && location.search.indexOf("demo") > -1) {
+    var dk = new Date(); var kk = dk.getFullYear() + "-" + String(dk.getMonth() + 1).padStart(2, "0") + "-" + String(dk.getDate()).padStart(2, "0");
+    window.VALENTINE = { style: { titleFont: "Cormorant" }, envelope: { label: "for you" }, dedication: "моему мужу", signature: "твоя жена", fallback: { text: "" }, days: {} };
+    window.VALENTINE.days[kk] = { occasion: "наш медовый месяц", text: "Здесь нам тепло и хорошо вдвоём.\nХочу, чтобы так было чаще —\nчтобы каждый день был немного праздником.",
+      img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23c39b78'/%3E%3Cstop offset='1' stop-color='%233a2b26'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' fill='url(%23g)'/%3E%3C/svg%3E",
+      palette: { paper: "#f4ecdd", ink: "#2c2723", accent: "#b0865f" } };
+  }
+
+  if (window.VALENTINE && window.VALENTINE.days) { gate.classList.add("hide"); render(window.VALENTINE); return; }
+
+  var vaultBuf = null;
+  fetch("vault.enc", { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw 0; return r.arrayBuffer(); })
+    .then(function (buf) {
+      vaultBuf = buf;
+      var saved = null; try { saved = localStorage.getItem(LS_KEY); } catch (e) {}
+      if (saved) tryOpen(saved, true);
+    })
+    .catch(function () { errEl.textContent = "Файл открытки не найден."; });
+
+  async function tryOpen(pass, silent) {
+    if (!vaultBuf) return;
+    try {
+      var V = await decryptVault(vaultBuf, pass);
+      try { localStorage.setItem(LS_KEY, pass); } catch (e) {}
+      gate.classList.add("hide");
+      render(V);
+    } catch (e) { if (!silent) errEl.textContent = "Неверный пароль"; }
+  }
+  function submit() { errEl.textContent = ""; var v = passIn.value.trim(); if (v) tryOpen(v, false); }
+  document.getElementById("go").addEventListener("click", submit);
+  passIn.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+})();
+</script>
+</body>
+</html>
