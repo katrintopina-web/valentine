@@ -419,18 +419,27 @@
             root.style.removeProperty("--lace-filter");
             root.style.removeProperty("--lace-opacity");
           } else {
-            // цветное → светлый градиент в гамме снимка + тёмные надписи + кружево в тон
+            // цветное фото → светлый градиент в гамме снимка
             var lite = "rgb(" + mix(r, 255, .62) + "," + mix(gg, 255, .62) + "," + mix(b, 255, .62) + ")";
             var deep = "rgb(" + mix(r, 24, .5) + "," + mix(gg, 24, .5) + "," + mix(b, 24, .5) + ")";
             if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
-            var ink = "rgb(" + mix(r, 12, .68) + "," + mix(gg, 12, .68) + "," + mix(b, 12, .68) + ")";
-            var inkSoft = "rgba(" + mix(r, 12, .68) + "," + mix(gg, 12, .68) + "," + mix(b, 12, .68) + ",.58)";
-            root.style.setProperty("--tag-fill", "linear-gradient(180deg," + ink + "," + ink + ")");
-            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.35)");
-            root.style.setProperty("--fg-soft", inkSoft);
-            var rot = Math.round(hueOf(r, gg, b) - 350);   // бордовое кружево ≈ 350°
-            root.style.setProperty("--lace-filter", "hue-rotate(" + rot + "deg) saturate(.68) brightness(.92)");
-            root.style.setProperty("--lace-opacity", ".85");
+
+            // «for you» — глубокое антик-золото с лёгким уклоном в гамму фото
+            var aR = mix(mix(150, r, .22), 22, .12);
+            var aG = mix(mix(112, gg, .22), 22, .12);
+            var aB = mix(mix(56, b, .22), 22, .12);
+            var g1 = "rgb(" + aR + "," + aG + "," + aB + ")";
+            var g2 = "rgb(" + mix(aR, 8, .32) + "," + mix(aG, 8, .32) + "," + mix(aB, 8, .32) + ")";
+            root.style.setProperty("--tag-fill", "linear-gradient(180deg," + g1 + "," + g2 + ")");
+            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.3)");
+            root.style.setProperty("--fg-soft", "rgba(" + aR + "," + aG + "," + aB + ",.6)");
+
+            // кружево → мягкий антик-тон, аккуратный сдвиг оттенка
+            var rot = hueOf(r, gg, b) - 350;
+            if (rot > 180) rot -= 360; if (rot < -180) rot += 360;
+            rot = Math.max(-45, Math.min(45, Math.round(rot)));
+            root.style.setProperty("--lace-filter", "sepia(.35) saturate(.85) hue-rotate(" + rot + "deg) brightness(.95)");
+            root.style.setProperty("--lace-opacity", ".88");
           }
         } catch (e) {}
       });
