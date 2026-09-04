@@ -438,9 +438,9 @@
             if (gate) gate.style.background = "";
             vars.forEach(function (v) { root.style.removeProperty(v); });
           } else {
-            // усиливаем насыщенность средней (кадр часто сероват из-за песка/белого)
+            // лёгкий подъём насыщенности (кадр часто сероват из-за песка/белого) — умеренно, без кислоты
             var mid = (Math.max(r, gg, b) + Math.min(r, gg, b)) / 2;
-            var sR = clamp(mid + (r - mid) * 1.8), sG = clamp(mid + (gg - mid) * 1.8), sB = clamp(mid + (b - mid) * 1.8);
+            var sR = clamp(mid + (r - mid) * 1.35), sG = clamp(mid + (gg - mid) * 1.35), sB = clamp(mid + (b - mid) * 1.35);
 
             // фон + паспарту = светлый тёплый оттенок гаммы
             var lite = "rgb(" + mix(sR, 255, .58) + "," + mix(sG, 255, .58) + "," + mix(sB, 255, .58) + ")";
@@ -461,13 +461,14 @@
             root.style.setProperty("--fg-bot", "rgba(248,242,232,.82)");
             root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.45)");
 
-            // конверт — глубокий насыщенный вариант того же тона, что фон
+            // конверт — глубокий сдержанный вариант тона фона
             var hh = hueOf(sR, sG, sB);
-            root.style.setProperty("--env-filter", "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)");
+            // жёлто-зелёную «кислоту» (45–105°) уводим в холодный глубокий зелёный
+            if (hh > 45 && hh < 105) hh = Math.round(120 + (hh - 45) * (28 / 60));
+            root.style.setProperty("--env-filter", "sepia(1) saturate(1.15) hue-rotate(" + (hh - 38) + "deg) brightness(.88)");
 
-            // кружево — цвет конверта, чуть светлее; светлые зоны PNG совпадают
-            // по тону с --mat, поэтому multiply не даёт резкой линии
-            root.style.setProperty("--lace-filter", "sepia(1) saturate(.85) hue-rotate(" + (hh - 38) + "deg) brightness(1)");
+            // кружево — тот же тон, ещё мягче
+            root.style.setProperty("--lace-filter", "sepia(1) saturate(.55) hue-rotate(" + (hh - 38) + "deg) brightness(1)");
             root.style.setProperty("--lace-opacity", ".9");
 
             // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
