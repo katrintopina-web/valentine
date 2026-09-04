@@ -231,12 +231,12 @@
     box-shadow:0 2px 4px rgba(20,6,0,.35), 0 26px 44px -22px rgba(0,0,0,.6);
   }
   /* лицевое фото: широкое паспарту (цвет = фон под кружевом), кружево с отступом от фото */
-  .paper.framed{ padding:34px; background:var(--mat, #f4ecdd); }
+  .paper.framed{ padding:38px; background:var(--mat, #f4ecdd); }
   .paper.framed::before{
     content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
-    border:24px solid transparent;
-    border-image:url("assets/lace.png") 215 / 24px / 0 round;
-    mix-blend-mode:multiply;   /* серый фон PNG смешивается с кремовым паспарту */
+    border:21px solid transparent;
+    border-image:url("assets/lace.png") 215 / 21px / 0 round;
+    mix-blend-mode:multiply;   /* серый фон PNG смешивается с бумагой паспарту */
     filter:var(--lace-filter, none);   /* цветное фото → сдвигаем кайму в тон */
     opacity:var(--lace-opacity, 1);
   }
@@ -465,9 +465,10 @@
             var hh = hueOf(sR, sG, sB);
             root.style.setProperty("--env-filter", "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)");
 
-            // кружево — тот же тон, но мягче (меньше насыщенность, чуть светлее)
-            root.style.setProperty("--lace-filter", "sepia(1) saturate(1.1) hue-rotate(" + (hh - 38) + "deg) brightness(1.02)");
-            root.style.setProperty("--lace-opacity", ".9");
+            // кружево — тот же тон, но мягче; светлые зоны PNG вытягиваем почти в белый,
+            // чтобы после multiply они слились с цветом бумаги (без светлого ободка)
+            root.style.setProperty("--lace-filter", "grayscale(.3) sepia(1) saturate(.7) hue-rotate(" + (hh - 38) + "deg) brightness(1.42) contrast(1.35)");
+            root.style.setProperty("--lace-opacity", ".88");
 
             // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
             var gb = "radial-gradient(130% 100% at 50% 2%, rgb("
