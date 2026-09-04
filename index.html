@@ -429,10 +429,12 @@
             H = Math.round(H * 60); if (H < 0) H += 360; return H;
           };
           var clamp = function (v) { return v < 0 ? 0 : v > 255 ? 255 : v | 0; };
+          var gate = document.getElementById("gate");
           var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh", "--lace-filter", "--lace-opacity", "--env-filter", "--mat"];
           if (sat < 0.14) {
             // ч/б фото → бордо во всём (значения по умолчанию)
             if (bg) bg.style.background = "";
+            if (gate) gate.style.background = "";
             vars.forEach(function (v) { root.style.removeProperty(v); });
           } else {
             // усиливаем насыщенность средней (кадр часто сероват из-за песка/белого)
@@ -458,15 +460,19 @@
             root.style.setProperty("--fg-bot", "rgba(248,242,232,.82)");
             root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.45)");
 
-            // конверт — благородный сдвиг оттенка (±26°), тон остаётся глубоким
-            var rot = hueOf(sR, sG, sB) - 350;
-            if (rot > 180) rot -= 360; if (rot < -180) rot += 360;
-            var envF = "hue-rotate(" + Math.max(-26, Math.min(26, Math.round(rot))) + "deg) saturate(.94) brightness(.98)";
+            // конверт — глубокий насыщенный вариант того же тона, что фон
+            var hh = hueOf(sR, sG, sB);
+            var envF = "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)";
             root.style.setProperty("--env-filter", envF);
 
-            // кружево — ровно в цвет конверта (та же коррекция), чуть прозрачнее
+            // кружево — ровно в цвет конверта
             root.style.setProperty("--lace-filter", envF);
-            root.style.setProperty("--lace-opacity", ".9");
+            root.style.setProperty("--lace-opacity", ".92");
+
+            // экран пароля — в тон дня (глубокий), чтобы переход был бесшовным
+            if (gate) gate.style.background = "radial-gradient(130% 100% at 50% 2%, rgb("
+              + mix(sR, 46, .4) + "," + mix(sG, 46, .4) + "," + mix(sB, 46, .4) + "), rgb("
+              + mix(sR, 16, .72) + "," + mix(sG, 16, .72) + "," + mix(sB, 16, .72) + ") 100%)";
           }
         } catch (e) {}
       });
