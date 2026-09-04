@@ -231,12 +231,12 @@
     box-shadow:0 2px 4px rgba(20,6,0,.35), 0 26px 44px -22px rgba(0,0,0,.6);
   }
   /* лицевое фото: широкое паспарту (цвет = фон под кружевом), кружево с отступом от фото */
-  .paper.framed{ padding:38px; background:var(--mat, #f4ecdd); }
+  .paper.framed{ padding:34px; background:var(--mat, #f4ecdd); }
   .paper.framed::before{
     content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
-    border:21px solid transparent;
-    border-image:url("assets/lace.png") 215 / 21px / 0 round;
-    mix-blend-mode:multiply;   /* серый фон PNG смешивается с бумагой паспарту */
+    border:24px solid transparent;
+    border-image:url("assets/lace.png") 215 / 24px / 0 round;
+    mix-blend-mode:multiply;   /* светлый фон PNG сливается с бумагой паспарту */
     filter:var(--lace-filter, none);   /* цветное фото → сдвигаем кайму в тон */
     opacity:var(--lace-opacity, 1);
   }
@@ -446,7 +446,7 @@
             var lite = "rgb(" + mix(sR, 255, .58) + "," + mix(sG, 255, .58) + "," + mix(sB, 255, .58) + ")";
             var deep = "rgb(" + mix(sR, 22, .5) + "," + mix(sG, 22, .5) + "," + mix(sB, 22, .5) + ")";
             if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
-            root.style.setProperty("--mat", "rgb(" + mix(sR, 255, .66) + "," + mix(sG, 255, .66) + "," + mix(sB, 255, .66) + ")");
+            root.style.setProperty("--mat", "rgb(" + mix(sR, 255, .5) + "," + mix(sG, 255, .5) + "," + mix(sB, 255, .5) + ")");
 
             // «for you» — антик-золото с лёгким уклоном в гамму, не тёмное
             var aR = mix(mix(172, sR, .2), 30, .06), aG = mix(mix(132, sG, .2), 30, .06), aB = mix(mix(70, sB, .2), 30, .06);
@@ -465,10 +465,10 @@
             var hh = hueOf(sR, sG, sB);
             root.style.setProperty("--env-filter", "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)");
 
-            // кружево — тот же тон, но мягче; светлые зоны без цветового налёта,
-            // мягкая яркость → после multiply сливаются с цветом бумаги (не белые, не цветные)
-            root.style.setProperty("--lace-filter", "grayscale(.4) sepia(1) saturate(.5) hue-rotate(" + (hh - 38) + "deg) brightness(1.1)");
-            root.style.setProperty("--lace-opacity", ".82");
+            // кружево — цвет конверта, чуть светлее; светлые зоны PNG совпадают
+            // по тону с --mat, поэтому multiply не даёт резкой линии
+            root.style.setProperty("--lace-filter", "sepia(1) saturate(.85) hue-rotate(" + (hh - 38) + "deg) brightness(1)");
+            root.style.setProperty("--lace-opacity", ".9");
 
             // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
             var gb = "radial-gradient(130% 100% at 50% 2%, rgb("
