@@ -465,10 +465,10 @@
             var hh = hueOf(sR, sG, sB);
             root.style.setProperty("--env-filter", "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)");
 
-            // кружево — тот же тон, но мягче; светлые зоны PNG вытягиваем почти в белый,
-            // чтобы после multiply они слились с цветом бумаги (без светлого ободка)
-            root.style.setProperty("--lace-filter", "grayscale(.3) sepia(1) saturate(.7) hue-rotate(" + (hh - 38) + "deg) brightness(1.42) contrast(1.35)");
-            root.style.setProperty("--lace-opacity", ".88");
+            // кружево — тот же тон, но мягче; светлые зоны без цветового налёта,
+            // мягкая яркость → после multiply сливаются с цветом бумаги (не белые, не цветные)
+            root.style.setProperty("--lace-filter", "grayscale(.4) sepia(1) saturate(.5) hue-rotate(" + (hh - 38) + "deg) brightness(1.1)");
+            root.style.setProperty("--lace-opacity", ".82");
 
             // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
             var gb = "radial-gradient(130% 100% at 50% 2%, rgb("
