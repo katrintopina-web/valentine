@@ -26,8 +26,9 @@
     --bordo:#7a1f2b;              /* фиксированный бордо — подпись всегда им */
     --photo-tint:#6a1f28;
 
-    --gold:rgba(214,180,116,.30);
-    --gold-line:linear-gradient(180deg,#f6e7c8,#e6c887 45%,#c9a25e 55%,#f3e6c6);
+    --gold:rgba(224,196,120,.30);
+    /* лимонное золото — светло-лимонный с золотым отливом */
+    --gold-line:linear-gradient(180deg,#fdf3bc,#f3df82 40%,#e7c65e 58%,#fbefc2);
 
     --ease-spring:cubic-bezier(.34,1.56,.64,1);
     --ease-soft:cubic-bezier(.22,1,.36,1);
@@ -315,7 +316,7 @@
               <div class="photo-heart" aria-hidden="true">
                 <svg viewBox="0 0 24 22" fill="none" stroke="url(#hg)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
                   <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#f6e7c8"/><stop offset=".45" stop-color="#e6c887"/><stop offset=".55" stop-color="#c9a25e"/><stop offset="1" stop-color="#f3e6c6"/>
+                    <stop offset="0" stop-color="#fdf3bc"/><stop offset=".4" stop-color="#f3df82"/><stop offset=".58" stop-color="#e7c65e"/><stop offset="1" stop-color="#fbefc2"/>
                   </linearGradient></defs>
                   <path d="M12 20.2C12 20.2 2.6 14.4 2.6 8.2 A4.7 4.7 0 0 1 12 5.7 A4.7 4.7 0 0 1 21.4 8.2 C21.4 14.4 12 20.2 12 20.2Z"/>
                 </svg>
@@ -462,17 +463,18 @@
 
             // конверт — глубокий насыщенный вариант того же тона, что фон
             var hh = hueOf(sR, sG, sB);
-            var envF = "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)";
-            root.style.setProperty("--env-filter", envF);
+            root.style.setProperty("--env-filter", "sepia(1) saturate(1.7) hue-rotate(" + (hh - 38) + "deg) brightness(.9)");
 
-            // кружево — ровно в цвет конверта
-            root.style.setProperty("--lace-filter", envF);
-            root.style.setProperty("--lace-opacity", ".92");
+            // кружево — тот же тон, но мягче (меньше насыщенность, чуть светлее)
+            root.style.setProperty("--lace-filter", "sepia(1) saturate(1.1) hue-rotate(" + (hh - 38) + "deg) brightness(1.02)");
+            root.style.setProperty("--lace-opacity", ".9");
 
-            // экран пароля — в тон дня (глубокий), чтобы переход был бесшовным
-            if (gate) gate.style.background = "radial-gradient(130% 100% at 50% 2%, rgb("
+            // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
+            var gb = "radial-gradient(130% 100% at 50% 2%, rgb("
               + mix(sR, 46, .4) + "," + mix(sG, 46, .4) + "," + mix(sB, 46, .4) + "), rgb("
               + mix(sR, 16, .72) + "," + mix(sG, 16, .72) + "," + mix(sB, 16, .72) + ") 100%)";
+            if (gate) gate.style.background = gb;
+            try { localStorage.setItem("gate_bg", gb); } catch (e) {}
           }
         } catch (e) {}
       });
@@ -523,6 +525,7 @@
   var gate = document.getElementById("gate");
   var passIn = document.getElementById("pass");
   var errEl = document.getElementById("err");
+  try { var gsaved = localStorage.getItem("gate_bg"); if (gsaved) gate.style.background = gsaved; } catch (e) {}
 
   // демо-режим для проверки дизайна: ...?demo
   if (!window.VALENTINE && location.search.indexOf("demo") > -1) {
