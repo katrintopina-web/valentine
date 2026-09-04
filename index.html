@@ -27,8 +27,8 @@
     --photo-tint:#6a1f28;
 
     --gold:rgba(224,196,120,.30);
-    /* лимонное золото — светло-лимонный с золотым отливом */
-    --gold-line:linear-gradient(180deg,#fdf3bc,#f3df82 40%,#e7c65e 58%,#fbefc2);
+    /* молочный оттенок с тёплым золотым отливом */
+    --gold-line:linear-gradient(180deg,#fffbf1,#f1e7cd 42%,#ddc99a 58%,#fdf8ea);
 
     --ease-spring:cubic-bezier(.34,1.56,.64,1);
     --ease-soft:cubic-bezier(.22,1,.36,1);
@@ -94,13 +94,13 @@
   .gate__row{ display:flex; gap:8px; }
   .gate input{
     flex:1; min-width:0; padding:12px 14px; border-radius:11px; border:1px solid rgba(230,200,150,.28);
-    background:rgba(255,255,255,.06); color:#f5ece0; font-family:var(--body-font); font-size:1rem; outline:none;
+    background:var(--gate-input-bg, rgba(255,255,255,.06)); color:#f5ece0; font-family:var(--body-font); font-size:1rem; outline:none;
     transition:border-color .2s ease, background .2s ease;
   }
   .gate input:focus{ border-color:rgba(230,200,150,.6); background:rgba(255,255,255,.1); }
   .gate button{
     padding:12px 18px; border:0; border-radius:11px; cursor:pointer; flex:none;
-    background:linear-gradient(180deg,#a5232f,#7c1722); color:#fdeee2;
+    background:linear-gradient(180deg,var(--gate-c1,#a5232f),var(--gate-c2,#7c1722)); color:#fdeee2;
     font-family:var(--title-font); font-style:italic; font-size:1.06rem;
     box-shadow:0 8px 20px -8px rgba(140,20,30,.7), inset 0 1px 0 rgba(255,255,255,.15);
     transition:transform .4s var(--ease-spring);
@@ -112,8 +112,8 @@
   .tagline{
     position:fixed; top:clamp(34px, 9%, 90px); left:0; right:0; z-index:3; text-align:center;
     font-family:var(--fancy-font); font-size:clamp(1.9rem,7.5vw,2.8rem); letter-spacing:.015em;
-    background:var(--tag-fill, var(--gold-line)); -webkit-background-clip:text; background-clip:text; color:transparent;
-    filter:drop-shadow(0 2px 3px var(--tag-shadow, rgba(0,0,0,.4)));
+    background:var(--gold-line); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 1px 1px var(--tag-shadow, rgba(0,0,0,.4))) drop-shadow(0 2px 5px var(--tag-shadow, rgba(0,0,0,.35)));
     opacity:0; transition:opacity .8s var(--ease-soft) .1s; transform:translateY(-6px);
   }
   .kicker{
@@ -313,7 +313,7 @@
               <div class="photo-heart" aria-hidden="true">
                 <svg viewBox="0 0 24 22" fill="none" stroke="url(#hg)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
                   <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#fdf3bc"/><stop offset=".4" stop-color="#f3df82"/><stop offset=".58" stop-color="#e7c65e"/><stop offset="1" stop-color="#fbefc2"/>
+                    <stop offset="0" stop-color="#fffbf1"/><stop offset=".42" stop-color="#f1e7cd"/><stop offset=".58" stop-color="#ddc99a"/><stop offset="1" stop-color="#fdf8ea"/>
                   </linearGradient></defs>
                   <path d="M12 20.2C12 20.2 2.6 14.4 2.6 8.2 A4.7 4.7 0 0 1 12 5.7 A4.7 4.7 0 0 1 21.4 8.2 C21.4 14.4 12 20.2 12 20.2Z"/>
                 </svg>
@@ -428,8 +428,9 @@
           };
           var clamp = function (v) { return v < 0 ? 0 : v > 255 ? 255 : v | 0; };
           var gate = document.getElementById("gate");
-          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh",
-            "--lace-filter", "--lace-opacity", "--env-filter", "--mat", "--e1", "--e2", "--e3", "--e4", "--e5", "--e6"];
+          var vars = ["--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh",
+            "--lace-filter", "--lace-opacity", "--env-filter", "--mat", "--e1", "--e2", "--e3", "--e4", "--e5", "--e6",
+            "--gate-c1", "--gate-c2", "--gate-input-bg"];
           if (sat < 0.14) {
             // ч/б фото → бордо во всём (значения по умолчанию)
             if (bg) bg.style.background = "";
@@ -446,10 +447,9 @@
             if (bg) bg.style.background = "radial-gradient(125% 95% at 50% 8%, " + lite + ", " + deep + " 92%)";
             root.style.setProperty("--mat", "rgb(" + mix(sR, 255, .5) + "," + mix(sG, 255, .5) + "," + mix(sB, 255, .5) + ")");
 
-            // «for you» — антик-золото с лёгким уклоном в гамму, не тёмное
-            var aR = mix(mix(172, sR, .2), 30, .06), aG = mix(mix(132, sG, .2), 30, .06), aB = mix(mix(70, sB, .2), 30, .06);
-            root.style.setProperty("--tag-fill", "linear-gradient(180deg,rgb(" + aR + "," + aG + "," + aB + "),rgb(" + mix(aR, 10, .28) + "," + mix(aG, 10, .28) + "," + mix(aB, 10, .28) + "))");
-            root.style.setProperty("--tag-shadow", "rgba(255,255,255,.5)");
+            // «for you» и сердечко — молочно-золотые всегда (--gold-line); на светлом фоне
+            // добавляем тёмный отлив-тень для контраста, чтобы не сливались
+            root.style.setProperty("--tag-shadow", "rgba(40,30,10,.5)");
 
             // дата (сверху, на светлом) — тёмная с тёплым отливом + светлый ореол
             var tR = mix(sR, 18, .78), tG = mix(sG, 18, .78), tB = mix(sB, 18, .78);
@@ -465,16 +465,26 @@
             root.style.setProperty("--e3", dp(.44)); root.style.setProperty("--e4", dp(.66));
             root.style.setProperty("--e5", dp(.52)); root.style.setProperty("--e6", dp(.72));
 
-            // кружево — тональное в том же цвете: обесцвечиваем PNG, multiply с --mat даёт нужный тон
-            root.style.setProperty("--lace-filter", "grayscale(1) brightness(1.06) contrast(.96)");
-            root.style.setProperty("--lace-opacity", ".8");
+            // кружево — светлое кремовое, не серое: тёплая база вместо чистого grayscale,
+            // чтобы тёмные нити не проваливались в чёрный, а тон брался от --mat при multiply
+            root.style.setProperty("--lace-filter", "sepia(.55) saturate(.32) brightness(1.16) contrast(.82)");
+            root.style.setProperty("--lace-opacity", ".85");
 
             // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
-            var gb = "radial-gradient(130% 100% at 50% 2%, rgb("
-              + mix(sR, 46, .4) + "," + mix(sG, 46, .4) + "," + mix(sB, 46, .4) + "), rgb("
-              + mix(sR, 16, .72) + "," + mix(sG, 16, .72) + "," + mix(sB, 16, .72) + ") 100%)";
+            var gc1 = "rgb(" + mix(sR, 46, .4) + "," + mix(sG, 46, .4) + "," + mix(sB, 46, .4) + ")";
+            var gc2 = "rgb(" + mix(sR, 16, .72) + "," + mix(sG, 16, .72) + "," + mix(sB, 16, .72) + ")";
+            var gib = "rgba(" + mix(sR, 46, .4) + "," + mix(sG, 46, .4) + "," + mix(sB, 46, .4) + ",.16)";
+            var gb = "radial-gradient(130% 100% at 50% 2%, " + gc1 + ", " + gc2 + " 100%)";
             if (gate) gate.style.background = gb;
-            try { localStorage.setItem("gate_bg", gb); } catch (e) {}
+            root.style.setProperty("--gate-c1", gc1);
+            root.style.setProperty("--gate-c2", gc2);
+            root.style.setProperty("--gate-input-bg", gib);
+            try {
+              localStorage.setItem("gate_bg", gb);
+              localStorage.setItem("gate_c1", gc1);
+              localStorage.setItem("gate_c2", gc2);
+              localStorage.setItem("gate_input_bg", gib);
+            } catch (e) {}
           }
         } catch (e) {}
       });
@@ -525,7 +535,13 @@
   var gate = document.getElementById("gate");
   var passIn = document.getElementById("pass");
   var errEl = document.getElementById("err");
-  try { var gsaved = localStorage.getItem("gate_bg"); if (gsaved) gate.style.background = gsaved; } catch (e) {}
+  try {
+    var gsaved = localStorage.getItem("gate_bg"); if (gsaved) gate.style.background = gsaved;
+    var rootEl = document.documentElement;
+    ["gate_c1", "gate_c2", "gate_input_bg"].forEach(function (k) {
+      var v = localStorage.getItem(k); if (v) rootEl.style.setProperty("--" + k.replace(/_/g, "-"), v);
+    });
+  } catch (e) {}
 
   // демо-режим для проверки дизайна: ...?demo
   if (!window.VALENTINE && location.search.indexOf("demo") > -1) {
