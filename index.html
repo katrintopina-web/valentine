@@ -142,9 +142,8 @@
   .env{ position:absolute; left:50%; top:50%; width:100%; aspect-ratio:7/5; transform:translate(-50%,-50%); perspective:1100px; }
   .env__back{
     position:absolute; inset:0; border-radius:8px;
-    background:var(--noise),var(--noise),linear-gradient(150deg,#a9222d,#721822);
+    background:var(--noise),var(--noise),linear-gradient(150deg,var(--e1,#a9222d),var(--e2,#721822));
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
-    filter:var(--env-filter, none);
     box-shadow:
       0 2px 4px rgba(0,0,0,.4),
       0 30px 50px -18px rgba(0,0,0,.55),
@@ -153,17 +152,15 @@
   }
   .env__pocket{
     position:absolute; inset:0; border-radius:8px; z-index:5;
-    background:var(--noise),var(--noise),linear-gradient(155deg,#8a1a24,#500e17);
+    background:var(--noise),var(--noise),linear-gradient(155deg,var(--e3,#8a1a24),var(--e4,#500e17));
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
-    filter:var(--env-filter, none);
     clip-path:polygon(0 8%,50% 52%,100% 8%,100% 100%,0 100%);
     box-shadow:inset 0 16px 26px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--gold);
   }
   .env__flap{
     position:absolute; left:0; right:0; top:0; height:65%; z-index:6;
-    background:var(--noise),var(--noise),linear-gradient(#78151e,#420a12);
+    background:var(--noise),var(--noise),linear-gradient(var(--e5,#78151e),var(--e6,#420a12));
     background-size:80px,180px,auto; background-blend-mode:overlay,soft-light,normal;
-    filter:var(--env-filter, none);
     clip-path:polygon(0 0,100% 0,50% 100%);
     transform-origin:50% 0; transform:rotateX(0deg) translateZ(0); backface-visibility:hidden;
     transition:transform .85s var(--ease-soft), z-index 0s .42s;
@@ -431,7 +428,8 @@
           };
           var clamp = function (v) { return v < 0 ? 0 : v > 255 ? 255 : v | 0; };
           var gate = document.getElementById("gate");
-          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh", "--lace-filter", "--lace-opacity", "--env-filter", "--mat"];
+          var vars = ["--tag-fill", "--tag-shadow", "--fg-soft", "--fg-top", "--fg-top-sh", "--fg-bot", "--fg-bot-sh",
+            "--lace-filter", "--lace-opacity", "--env-filter", "--mat", "--e1", "--e2", "--e3", "--e4", "--e5", "--e6"];
           if (sat < 0.14) {
             // ч/б фото → бордо во всём (значения по умолчанию)
             if (bg) bg.style.background = "";
@@ -461,15 +459,15 @@
             root.style.setProperty("--fg-bot", "rgba(248,242,232,.82)");
             root.style.setProperty("--fg-bot-sh", "0 1px 3px rgba(0,0,0,.45)");
 
-            // конверт — глубокий сдержанный вариант тона фона
-            var hh = hueOf(sR, sG, sB);
-            // жёлто-зелёную «кислоту» (45–105°) уводим в холодный глубокий зелёный
-            if (hh > 45 && hh < 105) hh = Math.round(120 + (hh - 45) * (28 / 60));
-            root.style.setProperty("--env-filter", "sepia(1) saturate(1.15) hue-rotate(" + (hh - 38) + "deg) brightness(.88)");
+            // конверт = глубокий вариант ТОГО ЖЕ цвета, что фон (без перекраса-хаков)
+            var dp = function (k) { return "rgb(" + mix(sR, 18, k) + "," + mix(sG, 18, k) + "," + mix(sB, 18, k) + ")"; };
+            root.style.setProperty("--e1", dp(.36)); root.style.setProperty("--e2", dp(.58));
+            root.style.setProperty("--e3", dp(.44)); root.style.setProperty("--e4", dp(.66));
+            root.style.setProperty("--e5", dp(.52)); root.style.setProperty("--e6", dp(.72));
 
-            // кружево — тот же тон, ещё мягче
-            root.style.setProperty("--lace-filter", "sepia(1) saturate(.55) hue-rotate(" + (hh - 38) + "deg) brightness(1)");
-            root.style.setProperty("--lace-opacity", ".9");
+            // кружево — тональное в том же цвете: обесцвечиваем PNG, multiply с --mat даёт нужный тон
+            root.style.setProperty("--lace-filter", "grayscale(1) brightness(1.06) contrast(.96)");
+            root.style.setProperty("--lace-opacity", ".8");
 
             // экран пароля — в тон дня; запоминаем, чтобы в след. раз показать сразу
             var gb = "radial-gradient(130% 100% at 50% 2%, rgb("
